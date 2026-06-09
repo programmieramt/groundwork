@@ -10,9 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.groundwork.programmieramt.R
 import com.groundwork.programmieramt.databinding.FragmentTeamMemberDetailBinding
 import com.groundwork.programmieramt.db.entity.TeamMemberEntity
+import com.groundwork.programmieramt.pen.FormTemplate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -39,23 +39,13 @@ class TeamMemberDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setSectionTitles()
+        binding.drawingSurface.drawTemplate = { canvas, w, h -> FormTemplate.drawTeamMember(canvas, w, h) }
 
         val memberId = arguments?.getLong(ARG_MEMBER_ID, 0L) ?: 0L
-        if (memberId > 0L) {
-            loadExisting(memberId)
-        }
+        if (memberId > 0L) loadExisting(memberId)
 
         binding.etErstkontakt.setOnClickListener { showDatePicker() }
         binding.btnSave.setOnClickListener { save() }
-    }
-
-    private fun setSectionTitles() {
-        binding.headerEindruck.tvSectionTitle.text = getString(R.string.section_erster_eindruck)
-        binding.headerStaerken.tvSectionTitle.text = getString(R.string.section_staerken)
-        binding.headerEntwicklung.tvSectionTitle.text = getString(R.string.section_entwicklungsfeld)
-        binding.headerMotivation.tvSectionTitle.text = getString(R.string.section_motivation)
-        binding.headerSensibles.tvSectionTitle.text = getString(R.string.section_sensibles)
     }
 
     private fun loadExisting(id: Long) {
@@ -68,11 +58,7 @@ class TeamMemberDetailFragment : Fragment() {
             if (member.erstkontakt > 0L) {
                 binding.etErstkontakt.setText(dateFormat.format(Date(member.erstkontakt)))
             }
-            binding.penErsterEindruck.setStrokesJson(member.ersterEindruck)
-            binding.penStaerken.setStrokesJson(member.staerken)
-            binding.penEntwicklungsfeld.setStrokesJson(member.entwicklungsfeld)
-            binding.penMotivation.setStrokesJson(member.motivation)
-            binding.penSensibles.setStrokesJson(member.sensibles)
+            binding.drawingSurface.setStrokesJson(member.strokes)
         }
     }
 
@@ -94,19 +80,14 @@ class TeamMemberDetailFragment : Fragment() {
         }
         binding.tilName.error = null
 
-        val entity = TeamMemberEntity(
+        viewModel.save(TeamMemberEntity(
             id = existingId,
             name = name,
             rolle = binding.etRolle.text?.toString()?.trim() ?: "",
             erstkontakt = erstkontaktMs,
-            ersterEindruck = binding.penErsterEindruck.getStrokesJson(),
-            staerken = binding.penStaerken.getStrokesJson(),
-            entwicklungsfeld = binding.penEntwicklungsfeld.getStrokesJson(),
-            motivation = binding.penMotivation.getStrokesJson(),
-            sensibles = binding.penSensibles.getStrokesJson(),
+            strokes = binding.drawingSurface.getStrokesJson(),
             updatedAt = System.currentTimeMillis()
-        )
-        viewModel.save(entity)
+        ))
         findNavController().popBackStack()
     }
 
@@ -117,7 +98,6 @@ class TeamMemberDetailFragment : Fragment() {
 
     companion object {
         private const val ARG_MEMBER_ID = "member_id"
-
         fun args(memberId: Long?) = bundleOf(ARG_MEMBER_ID to (memberId ?: 0L))
     }
 }

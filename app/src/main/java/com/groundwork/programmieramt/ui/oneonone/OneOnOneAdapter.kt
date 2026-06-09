@@ -19,7 +19,7 @@ class OneOnOneAdapter(
             binding.tvMemberName.text = item.memberName
             binding.tvDatum.text = item.session.datum.toGermanDate()
             binding.tvSessionNr.text = "Nr. ${item.session.sessionNumber}"
-            binding.tvThemaPreview.text = item.session.thema.ifBlank { "—" }
+            binding.tvThemaPreview.text = "—"
             binding.root.setOnClickListener { onClick(item) }
         }
     }

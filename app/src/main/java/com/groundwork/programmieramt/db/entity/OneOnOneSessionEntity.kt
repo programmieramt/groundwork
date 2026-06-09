@@ -22,11 +22,6 @@ data class OneOnOneSessionEntity(
     val teamMemberId: Long,
     val datum: Long = System.currentTimeMillis(),
     val sessionNumber: Int = 1,
-    val thema: String = "",
-    val echteProblem: String = "",
-    val vereinbarungen: String = "",
-    val eindruck: String = "",
-    val offenePunkte: String = "",
-    val createdAt: Long = System.currentTimeMillis(),
+    val strokes: String = "",
     val updatedAt: Long = System.currentTimeMillis()
 )

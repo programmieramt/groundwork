@@ -18,7 +18,7 @@ import com.groundwork.programmieramt.db.entity.TeamNoteEntity
         TeamNoteEntity::class,
         SofortNoteEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class GroundworkDatabase : RoomDatabase() {

@@ -10,8 +10,6 @@ data class SofortNoteEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val datum: Long = System.currentTimeMillis(),
     val kategorie: String = "",
-    val capture: String = "",
-    val followUp: String = "",
-    val createdAt: Long = System.currentTimeMillis(),
+    val strokes: String = "",
     val updatedAt: Long = System.currentTimeMillis()
 )

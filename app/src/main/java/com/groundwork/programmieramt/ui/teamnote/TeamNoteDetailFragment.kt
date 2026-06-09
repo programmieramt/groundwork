@@ -9,9 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.groundwork.programmieramt.R
 import com.groundwork.programmieramt.databinding.FragmentTeamNoteDetailBinding
 import com.groundwork.programmieramt.db.entity.TeamNoteEntity
+import com.groundwork.programmieramt.pen.FormTemplate
 import com.groundwork.programmieramt.util.toGermanDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -38,7 +38,8 @@ class TeamNoteDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setSectionTitles()
+        binding.drawingSurface.drawTemplate = { canvas, w, h -> FormTemplate.drawTeamNote(canvas, w, h) }
+
         binding.etDatum.setText(datumMs.toGermanDate())
         binding.etDatum.setOnClickListener { showDatePicker() }
 
@@ -48,13 +49,6 @@ class TeamNoteDetailFragment : Fragment() {
         binding.btnSave.setOnClickListener { save() }
     }
 
-    private fun setSectionTitles() {
-        binding.headerBeobachtungen.tvSectionTitle.text = getString(R.string.section_beobachtungen)
-        binding.headerStimmung.tvSectionTitle.text = getString(R.string.section_stimmung)
-        binding.headerSpannungen.tvSectionTitle.text = getString(R.string.section_spannungen)
-        binding.headerMassnahmen.tvSectionTitle.text = getString(R.string.section_massnahmen)
-    }
-
     private fun loadExisting(id: Long) {
         viewLifecycleOwner.lifecycleScope.launch {
             val note = viewModel.getNoteById(id) ?: return@launch
@@ -62,10 +56,7 @@ class TeamNoteDetailFragment : Fragment() {
             datumMs = note.datum
             binding.etDatum.setText(datumMs.toGermanDate())
             binding.etKontext.setText(note.kontextMeeting)
-            binding.penBeobachtungen.setStrokesJson(note.beobachtungen)
-            binding.penStimmung.setStrokesJson(note.stimmungDynamik)
-            binding.penSpannungen.setStrokesJson(note.spannungenOffenePunkte)
-            binding.penMassnahmen.setStrokesJson(note.massnahmenFollowUp)
+            binding.drawingSurface.setStrokesJson(note.strokes)
         }
     }
 
@@ -83,10 +74,7 @@ class TeamNoteDetailFragment : Fragment() {
             id = existingId,
             datum = datumMs,
             kontextMeeting = binding.etKontext.text?.toString()?.trim() ?: "",
-            beobachtungen = binding.penBeobachtungen.getStrokesJson(),
-            stimmungDynamik = binding.penStimmung.getStrokesJson(),
-            spannungenOffenePunkte = binding.penSpannungen.getStrokesJson(),
-            massnahmenFollowUp = binding.penMassnahmen.getStrokesJson(),
+            strokes = binding.drawingSurface.getStrokesJson(),
             updatedAt = System.currentTimeMillis()
         ))
         findNavController().popBackStack()

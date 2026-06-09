@@ -11,37 +11,34 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.view.ViewTreeObserver
 import com.groundwork.programmieramt.da.Stroke
 import com.groundwork.programmieramt.da.StrokePoint
 import com.onyx.android.sdk.pen.TouchHelper
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import timber.log.Timber
 import java.util.UUID
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-/**
- * SurfaceView that integrates Boox TouchHelper for native stylus input.
- * Falls back to MotionEvent rendering on non-Boox devices automatically.
- */
 class DrawingSurfaceView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : SurfaceView(context, attrs), SurfaceHolder.Callback {
 
-    var onStrokeAdded: (Stroke) -> Unit = {}
-    var onStrokeErased: (UUID) -> Unit = {}
-    var currentStrokes: () -> List<Stroke> = { emptyList() }
+    /** Called in redrawAll() after white fill, before strokes. Set to draw the form template. */
+    var drawTemplate: (Canvas, Int, Int) -> Unit = { _, _, _ -> }
 
+    private val strokes = mutableListOf<Stroke>()
     private var touchHelper: TouchHelper? = null
     private var isBooxDevice = false
 
-    // Fallback MotionEvent drawing state
     private val activeFallbackPoints = mutableListOf<StrokePoint>()
     private var fallbackFirstTimestamp = 0L
 
-    private val strokePaint = Paint().apply {
-        isAntiAlias = true
+    private val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
@@ -49,11 +46,25 @@ class DrawingSurfaceView @JvmOverloads constructor(
         strokeWidth = 3f
     }
 
+    private val scrollChangedListener = ViewTreeObserver.OnScrollChangedListener {
+        updateLimitRect()
+    }
+
     init {
-        setZOrderMediaOverlay(false)
-        holder.setFormat(PixelFormat.OPAQUE)
+        setZOrderOnTop(true)
+        holder.setFormat(PixelFormat.TRANSPARENT)
         keepScreenOn = true
         holder.addCallback(this)
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        viewTreeObserver.addOnScrollChangedListener(scrollChangedListener)
+    }
+
+    override fun onDetachedFromWindow() {
+        viewTreeObserver.removeOnScrollChangedListener(scrollChangedListener)
+        super.onDetachedFromWindow()
     }
 
     // --- SurfaceHolder.Callback ---
@@ -64,7 +75,7 @@ class DrawingSurfaceView @JvmOverloads constructor(
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        updateTouchHelperLimitRect(width, height)
+        updateLimitRect()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             systemGestureExclusionRects = listOf(Rect(0, 0, width, height))
         }
@@ -72,30 +83,34 @@ class DrawingSurfaceView @JvmOverloads constructor(
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
+        touchHelper?.setRawDrawingEnabled(false)
+        touchHelper?.isRawDrawingRenderEnabled = false
         touchHelper?.closeRawDrawing()
     }
 
-    // --- TouchHelper setup ---
+    // --- TouchHelper ---
 
     private fun initTouchHelper() {
         val penCallback = BooxPenCallback(
             onStrokeAdded = { stroke ->
-                onStrokeAdded(stroke)
+                strokes.add(stroke)
                 redrawAll()
             },
             onStrokeErased = { id ->
-                onStrokeErased(id)
+                strokes.removeAll { it.strokeId == id }
                 redrawAll()
             },
-            currentStrokes = currentStrokes
+            currentStrokes = { strokes.toList() }
         )
-
         try {
             touchHelper = TouchHelper.create(this, penCallback)
             isBooxDevice = true
             touchHelper?.setStrokeWidth(3.0f)
             touchHelper?.setStrokeColor(Color.BLACK)
+            updateLimitRect()
             touchHelper?.openRawDrawing()
+            touchHelper?.setRawDrawingEnabled(true)
+            touchHelper?.isRawDrawingRenderEnabled = true
             Timber.i("Boox TouchHelper initialized on ${android.os.Build.MODEL}")
         } catch (e: Throwable) {
             Timber.w(e, "TouchHelper unavailable, using MotionEvent fallback")
@@ -104,23 +119,43 @@ class DrawingSurfaceView @JvmOverloads constructor(
         }
     }
 
-    private fun updateTouchHelperLimitRect(width: Int, height: Int) {
-        touchHelper?.setLimitRect(
-            Rect(0, 0, width, height),
+    private fun updateLimitRect() {
+        val th = touchHelper ?: return
+        val location = IntArray(2)
+        getLocationOnScreen(location)
+        th.setLimitRect(
+            Rect(location[0], location[1], location[0] + width, location[1] + height),
             ArrayList()
-        ) ?: return
+        )
     }
 
-    // --- MotionEvent fallback for non-Boox devices ---
+    // --- JSON serialisation ---
+
+    fun getStrokesJson(): String {
+        if (strokes.isEmpty()) return ""
+        return try { strokesAdapter.toJson(strokes) ?: "" } catch (_: Exception) { "" }
+    }
+
+    fun setStrokesJson(json: String) {
+        strokes.clear()
+        if (json.isNotBlank() && json.startsWith("[")) {
+            try { strokesAdapter.fromJson(json)?.let { strokes.addAll(it) } } catch (_: Exception) {}
+        }
+        post { redrawAll() }
+    }
+
+    // --- Touch events ---
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (isBooxDevice) return false
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> parent?.requestDisallowInterceptTouchEvent(true)
+            MotionEvent.ACTION_UP,
+            MotionEvent.ACTION_CANCEL -> parent?.requestDisallowInterceptTouchEvent(false)
+        }
+        if (isBooxDevice) return true
 
         val toolType = event.getToolType(0)
-        val isStylus = toolType == MotionEvent.TOOL_TYPE_STYLUS
-        val isFinger = toolType == MotionEvent.TOOL_TYPE_FINGER
-
-        if (!isStylus && !isFinger) return false
+        if (toolType != MotionEvent.TOOL_TYPE_STYLUS && toolType != MotionEvent.TOOL_TYPE_FINGER) return true
 
         val x = (10 * event.x).roundToInt() / 10.0f
         val y = (10 * event.y).roundToInt() / 10.0f
@@ -128,7 +163,6 @@ class DrawingSurfaceView @JvmOverloads constructor(
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                parent?.requestDisallowInterceptTouchEvent(true)
                 activeFallbackPoints.clear()
                 fallbackFirstTimestamp = System.currentTimeMillis()
                 activeFallbackPoints.add(StrokePoint(x, y, pressure))
@@ -147,7 +181,7 @@ class DrawingSurfaceView @JvmOverloads constructor(
                         timestamp = fallbackFirstTimestamp,
                         strokePoints = activeFallbackPoints.toList()
                     )
-                    onStrokeAdded(stroke)
+                    strokes.add(stroke)
                     activeFallbackPoints.clear()
                     redrawAll()
                 }
@@ -159,24 +193,30 @@ class DrawingSurfaceView @JvmOverloads constructor(
     // --- Drawing ---
 
     fun redrawAll() {
-        val canvas = holder.lockCanvas() ?: return
+        touchHelper?.setRawDrawingEnabled(false)
+        touchHelper?.isRawDrawingRenderEnabled = false
+        val canvas = holder.lockCanvas() ?: run {
+            touchHelper?.setRawDrawingEnabled(true)
+            touchHelper?.isRawDrawingRenderEnabled = true
+            return
+        }
         try {
             canvas.drawColor(Color.WHITE)
-            for (stroke in currentStrokes()) {
-                drawStroke(canvas, stroke)
-            }
+            drawTemplate(canvas, width, height)
+            for (stroke in strokes) drawStroke(canvas, stroke)
         } finally {
             holder.unlockCanvasAndPost(canvas)
         }
+        touchHelper?.setRawDrawingEnabled(true)
+        touchHelper?.isRawDrawingRenderEnabled = true
     }
 
     private fun drawFallbackInProgress() {
         val canvas = holder.lockCanvas() ?: return
         try {
             canvas.drawColor(Color.WHITE)
-            for (stroke in currentStrokes()) {
-                drawStroke(canvas, stroke)
-            }
+            drawTemplate(canvas, width, height)
+            for (stroke in strokes) drawStroke(canvas, stroke)
             drawPointList(canvas, activeFallbackPoints)
         } finally {
             holder.unlockCanvasAndPost(canvas)
@@ -200,5 +240,11 @@ class DrawingSurfaceView @JvmOverloads constructor(
         val dx = abs(x1 - x2).toDouble()
         val dy = abs(y1 - y2).toDouble()
         return sqrt(dx * dx + dy * dy)
+    }
+
+    companion object {
+        private val moshi: Moshi = Moshi.Builder().add(UuidAdapter()).build()
+        private val strokesType = Types.newParameterizedType(List::class.java, Stroke::class.java)
+        private val strokesAdapter by lazy { moshi.adapter<List<Stroke>>(strokesType) }
     }
 }

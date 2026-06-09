@@ -19,7 +19,7 @@ class SofortAdapter(
         fun bind(entity: SofortNoteEntity) {
             binding.tvDatum.text = entity.datum.toGermanDate()
             binding.tvKategorie.text = entity.kategorie
-            binding.tvCapturePreview.text = entity.capture.ifBlank { "—" }
+            binding.tvCapturePreview.text = "—"
             binding.root.setOnClickListener { onClick(entity) }
         }
     }

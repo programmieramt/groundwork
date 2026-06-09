@@ -19,7 +19,7 @@ class TeamNoteAdapter(
         fun bind(entity: TeamNoteEntity) {
             binding.tvDatum.text = entity.datum.toGermanDate()
             binding.tvKontext.text = entity.kontextMeeting.ifBlank { "—" }
-            binding.tvPreview.text = entity.beobachtungen.ifBlank { entity.stimmungDynamik }.ifBlank { "—" }
+            binding.tvPreview.text = "—"
             binding.root.setOnClickListener { onClick(entity) }
         }
     }

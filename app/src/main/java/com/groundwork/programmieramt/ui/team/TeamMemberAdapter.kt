@@ -17,11 +17,7 @@ class TeamMemberAdapter(
 
         fun bind(entity: TeamMemberEntity) {
             binding.tvName.text = entity.name
-            binding.tvRolle.text = buildString {
-                if (entity.rolle.isNotBlank()) append(entity.rolle)
-                if (entity.rolle.isNotBlank() && entity.team.isNotBlank()) append(" · ")
-                if (entity.team.isNotBlank()) append(entity.team)
-            }
+            binding.tvRolle.text = entity.rolle
             binding.root.setOnClickListener { onClick(entity) }
         }
     }

@@ -14,6 +14,7 @@ import com.groundwork.programmieramt.R
 import com.groundwork.programmieramt.databinding.FragmentOneOnOneDetailBinding
 import com.groundwork.programmieramt.db.entity.OneOnOneSessionEntity
 import com.groundwork.programmieramt.db.entity.TeamMemberEntity
+import com.groundwork.programmieramt.pen.FormTemplate
 import com.groundwork.programmieramt.util.toGermanDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -41,7 +42,8 @@ class OneOnOneDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setSectionTitles()
+        binding.drawingSurface.drawTemplate = { canvas, w, h -> FormTemplate.drawOneOnOne(canvas, w, h) }
+
         binding.etDatum.setText(datumMs.toGermanDate())
         binding.etDatum.setOnClickListener { showDatePicker() }
 
@@ -53,14 +55,6 @@ class OneOnOneDetailFragment : Fragment() {
         if (sessionId > 0L) loadExisting(sessionId)
 
         binding.btnSave.setOnClickListener { save() }
-    }
-
-    private fun setSectionTitles() {
-        binding.headerThema.tvSectionTitle.text = getString(R.string.section_thema)
-        binding.headerProblem.tvSectionTitle.text = getString(R.string.section_echtes_problem)
-        binding.headerVereinbarungen.tvSectionTitle.text = getString(R.string.section_vereinbarungen)
-        binding.headerEindruck.tvSectionTitle.text = getString(R.string.section_eindruck)
-        binding.headerOffenePunkte.tvSectionTitle.text = getString(R.string.section_offene_punkte)
     }
 
     private fun setupMemberDropdown(members: List<TeamMemberEntity>) {
@@ -79,11 +73,7 @@ class OneOnOneDetailFragment : Fragment() {
             existingId = session.id
             datumMs = session.datum
             binding.etDatum.setText(datumMs.toGermanDate())
-            binding.penThema.setStrokesJson(session.thema)
-            binding.penEchtesProblem.setStrokesJson(session.echteProblem)
-            binding.penVereinbarungen.setStrokesJson(session.vereinbarungen)
-            binding.penEindruck.setStrokesJson(session.eindruck)
-            binding.penOffenePunkte.setStrokesJson(session.offenePunkte)
+            binding.drawingSurface.setStrokesJson(session.strokes)
             viewModel.members.value.find { it.id == session.teamMemberId }?.let {
                 selectedMember = it
                 binding.etMember.setText(it.name, false)
@@ -124,11 +114,7 @@ class OneOnOneDetailFragment : Fragment() {
                 teamMemberId = member.id,
                 datum = datumMs,
                 sessionNumber = sessionNr,
-                thema = binding.penThema.getStrokesJson(),
-                echteProblem = binding.penEchtesProblem.getStrokesJson(),
-                vereinbarungen = binding.penVereinbarungen.getStrokesJson(),
-                eindruck = binding.penEindruck.getStrokesJson(),
-                offenePunkte = binding.penOffenePunkte.getStrokesJson(),
+                strokes = binding.drawingSurface.getStrokesJson(),
                 updatedAt = System.currentTimeMillis()
             ))
             findNavController().popBackStack()

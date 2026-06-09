@@ -21,7 +21,9 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): GroundworkDatabase =
-        Room.databaseBuilder(context, GroundworkDatabase::class.java, "groundwork.db").build()
+        Room.databaseBuilder(context, GroundworkDatabase::class.java, "groundwork.db")
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides fun provideTeamMemberDao(db: GroundworkDatabase): TeamMemberDao = db.teamMemberDao()
     @Provides fun provideOneOnOneSessionDao(db: GroundworkDatabase): OneOnOneSessionDao = db.oneOnOneSessionDao()

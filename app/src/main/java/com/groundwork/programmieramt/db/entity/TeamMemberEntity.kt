@@ -10,13 +10,7 @@ data class TeamMemberEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val rolle: String = "",
-    val team: String = "",
     val erstkontakt: Long = 0L,
-    val ersterEindruck: String = "",
-    val staerken: String = "",
-    val entwicklungsfeld: String = "",
-    val motivation: String = "",
-    val sensibles: String = "",
-    val createdAt: Long = System.currentTimeMillis(),
+    val strokes: String = "",
     val updatedAt: Long = System.currentTimeMillis()
 )

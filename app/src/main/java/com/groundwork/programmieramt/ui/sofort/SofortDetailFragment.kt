@@ -7,13 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.groundwork.programmieramt.R
 import com.groundwork.programmieramt.databinding.FragmentSofortDetailBinding
 import com.groundwork.programmieramt.db.entity.SofortNoteEntity
+import com.groundwork.programmieramt.pen.FormTemplate
 import com.groundwork.programmieramt.util.toGermanDate
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -38,7 +39,8 @@ class SofortDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setSectionTitles()
+        binding.drawingSurface.drawTemplate = { canvas, w, h -> FormTemplate.drawSofort(canvas, w, h) }
+
         binding.etDatum.setText(datumMs.toGermanDate())
         binding.etDatum.setOnClickListener { showDatePicker() }
 
@@ -48,20 +50,14 @@ class SofortDetailFragment : Fragment() {
         binding.btnSave.setOnClickListener { save() }
     }
 
-    private fun setSectionTitles() {
-        binding.headerCapture.tvSectionTitle.text = getString(R.string.section_capture)
-        binding.headerFollowup.tvSectionTitle.text = getString(R.string.section_followup)
-    }
-
     private fun loadExisting(id: Long) {
-        viewLifecycleOwner.lifecycleScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             val note = viewModel.getNoteById(id) ?: return@launch
             existingId = note.id
             datumMs = note.datum
             binding.etDatum.setText(datumMs.toGermanDate())
             binding.etKategorie.setText(note.kategorie)
-            binding.penCapture.setStrokesJson(note.capture)
-            binding.penFollowup.setStrokesJson(note.followUp)
+            binding.drawingSurface.setStrokesJson(note.strokes)
         }
     }
 
@@ -79,8 +75,7 @@ class SofortDetailFragment : Fragment() {
             id = existingId,
             datum = datumMs,
             kategorie = binding.etKategorie.text?.toString()?.trim() ?: "",
-            capture = binding.penCapture.getStrokesJson(),
-            followUp = binding.penFollowup.getStrokesJson(),
+            strokes = binding.drawingSurface.getStrokesJson(),
             updatedAt = System.currentTimeMillis()
         ))
         findNavController().popBackStack()
