@@ -1,0 +1,140 @@
+plugins {
+    id 'com.android.application'
+    id 'com.google.devtools.ksp'
+    id 'com.google.dagger.hilt.android'
+    id 'kotlin-android'
+}
+
+android {
+    compileSdk 36
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    defaultConfig {
+        applicationId "com.groundwork.programmieramt"
+        minSdkVersion 26
+        targetSdkVersion 36
+
+        versionCode parentVersionCode
+        versionName parentVersionName
+
+        multiDexEnabled = true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    applicationVariants.configureEach { variant ->
+        variant.outputs.each { output ->
+            output.outputFileName = "${applicationName}-${variant.flavorName}-${variant.buildType.name}-${defaultConfig.versionName}.apk"
+        }
+    }
+
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
+
+    flavorDimensions = ['tier']
+    productFlavors {
+        dev {
+            resValue "string", "app_name", "Groundwork Dev"
+            applicationIdSuffix ""
+            dimension 'tier'
+        }
+        prod {
+            resValue "string", "app_name", "Groundwork"
+            applicationIdSuffix ""
+            dimension 'tier'
+        }
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("../keystore.jks")
+            if (project.hasProperty('groundworkStorePassword')) {
+                storePassword project.property('groundworkStorePassword').toString()
+            } else {
+                storePassword System.getenv("KEYSTORE_PASSWORD")
+            }
+            keyAlias "androiddebugkey"
+            if (project.hasProperty('groundworkKeyPassword')) {
+                keyPassword project.property('groundworkKeyPassword').toString()
+            } else {
+                keyPassword System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            debuggable true
+            applicationIdSuffix ".debug"
+            resValue "string", "app_name", "Groundwork Debug"
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled false
+            shrinkResources false
+            debuggable false
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/DEPENDENCIES', 'META-INF/INDEX.LIST']
+        }
+    }
+
+    namespace 'com.groundwork.programmieramt'
+    lint {
+        disable 'MissingTranslation', 'MissingQuantity', 'GestureBackNavigation'
+    }
+}
+
+dependencies {
+    implementation 'com.jakewharton.timber:timber:5.0.1'
+
+    // Google Sign-In + Drive
+    implementation 'com.google.android.gms:play-services-auth:21.4.0'
+    implementation 'com.google.api-client:google-api-client-android:2.8.1'
+    implementation 'com.google.apis:google-api-services-drive:v3-rev20250829-2.0.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2'
+
+    // AndroidX
+    implementation "androidx.activity:activity-ktx:1.11.0"
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.9.4'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.9.4'
+    implementation "androidx.recyclerview:recyclerview:1.4.0"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+
+    // Hilt DI
+    ksp 'com.google.dagger:hilt-android-compiler:2.57.1'
+    implementation 'com.google.dagger:hilt-android:2.57.1'
+
+    // WorkManager + Hilt
+    implementation "androidx.work:work-runtime-ktx:2.10.1"
+    implementation "androidx.hilt:hilt-work:1.2.0"
+    ksp "androidx.hilt:hilt-compiler:1.2.0"
+
+    // Boox SDK
+    implementation 'com.onyx.android.sdk:onyxsdk-base:1.8.2.1'
+    implementation 'com.onyx.android.sdk:onyxsdk-device:1.3.1.3'
+
+    // Moshi JSON
+    ksp 'com.squareup.moshi:moshi-kotlin-codegen:1.15.2'
+    implementation 'com.squareup.moshi:moshi:1.15.2'
+
+    // Test
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
+}
+
+apply plugin: 'com.google.gms.google-services'

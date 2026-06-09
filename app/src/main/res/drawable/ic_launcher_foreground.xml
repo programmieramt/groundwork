@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Shovel / foundation symbol: white rectangle base -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,72 L88,72 L88,82 Q88,88 82,88 L26,88 Q20,88 20,82 Z"/>
+    <!-- Three foundation pillars -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M28,40 L40,40 L40,72 L28,72 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M48,28 L60,28 L60,72 L48,72 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M68,48 L80,48 L80,72 L68,72 Z"/>
+</vector>
