@@ -10,4 +10,25 @@
     <string name="drive_connected">Drive verbunden</string>
     <string name="drive_disconnected">Drive trennen</string>
     <string name="drive_connect">Drive verbinden</string>
+
+    <!-- TeamMember fields -->
+    <string name="field_name">Name</string>
+    <string name="field_rolle_team">Rolle / Team</string>
+    <string name="field_erstkontakt">Erstkontakt</string>
+    <string name="field_erster_eindruck">Erster Eindruck</string>
+    <string name="field_staerken">Stärken (was ich bisher sehe)</string>
+    <string name="field_entwicklungsfeld">Entwicklungsfeld (Vermutung)</string>
+    <string name="field_motivation">Motivation / Was treibt sie an</string>
+    <string name="field_sensibles">Sensibles / Wichtig zu wissen</string>
+
+    <!-- Section headers -->
+    <string name="section_erster_eindruck">ERSTER EINDRUCK</string>
+    <string name="section_staerken">STÄRKEN</string>
+    <string name="section_entwicklungsfeld">ENTWICKLUNGSFELD</string>
+    <string name="section_motivation">MOTIVATION / WAS TREIBT SIE AN</string>
+    <string name="section_sensibles">SENSIBLES / WICHTIG ZU WISSEN</string>
+
+    <string name="label_teammitglied">Teammitglied</string>
+    <string name="action_save">Speichern</string>
+    <string name="action_delete">Löschen</string>
 </resources>

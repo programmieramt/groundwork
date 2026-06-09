@@ -12,7 +12,21 @@
     <fragment
         android:id="@+id/nav_team"
         android:name="com.groundwork.programmieramt.ui.team.TeamFragment"
-        android:label="@string/nav_team" />
+        android:label="@string/nav_team">
+        <action
+            android:id="@+id/action_team_to_detail"
+            app:destination="@id/nav_team_member_detail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_team_member_detail"
+        android:name="com.groundwork.programmieramt.ui.team.TeamMemberDetailFragment"
+        android:label="@string/label_teammitglied">
+        <argument
+            android:name="member_id"
+            app:argType="long"
+            android:defaultValue="0" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_one_on_one"

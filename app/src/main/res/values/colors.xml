@@ -4,4 +4,11 @@
     <color name="colorPrimary">#1B5E20</color>
     <color name="colorPrimaryDark">#003300</color>
     <color name="colorAccent">#A5D6A7</color>
+
+    <!-- Template section colors -->
+    <color name="template_sofort">#1565C0</color>
+    <color name="template_team_allgemein">#E65100</color>
+    <color name="template_teammitglied">#388E3C</color>
+    <color name="template_oneonone">#4A148C</color>
+    <color name="section_divider">#BDBDBD</color>
 </resources>
