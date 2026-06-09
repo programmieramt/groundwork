@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Groundwork</string>
+
+    <string name="nav_sofort">Sofort</string>
+    <string name="nav_team">Team</string>
+    <string name="nav_one_on_one">1:1</string>
+    <string name="nav_team_note">Beobachtungen</string>
+
+    <string name="drive_connected">Drive verbunden</string>
+    <string name="drive_disconnected">Drive trennen</string>
+    <string name="drive_connect">Drive verbinden</string>
 </resources>

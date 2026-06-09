@@ -2,11 +2,16 @@ package com.groundwork.programmieramt.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
+import com.groundwork.programmieramt.R
 import com.groundwork.programmieramt.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -24,11 +29,10 @@ class MainActivity : AppCompatActivity() {
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         try {
             val account = task.getResult(ApiException::class.java)
-            Timber.i("Sign-in successful: ${account.email}")
-            onSignedIn()
+            Timber.i("Drive sign-in successful: ${account.email}")
+            invalidateOptionsMenu()
         } catch (e: ApiException) {
-            Timber.e(e, "Sign-in failed: ${e.statusCode}")
-            updateUi(signedIn = false)
+            Timber.e(e, "Drive sign-in failed: ${e.statusCode}")
         }
     }
 
@@ -38,38 +42,38 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
-        binding.btnSignIn.setOnClickListener {
-            signInLauncher.launch(signInClient.signInIntent)
-        }
-
-        binding.btnSignOut.setOnClickListener {
-            signInClient.signOut().addOnCompleteListener {
-                updateUi(signedIn = false)
-            }
-        }
+        val navHost = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        binding.bottomNavigation.setupWithNavController(navHost.navController)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account != null) {
-            onSignedIn()
+            menu.add(0, MENU_DRIVE_DISCONNECT, 0, getString(R.string.drive_disconnected))
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
         } else {
-            updateUi(signedIn = false)
+            menu.add(0, MENU_DRIVE_CONNECT, 0, getString(R.string.drive_connect))
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            MENU_DRIVE_CONNECT -> {
+                signInLauncher.launch(signInClient.signInIntent)
+                true
+            }
+            MENU_DRIVE_DISCONNECT -> {
+                signInClient.signOut().addOnCompleteListener { invalidateOptionsMenu() }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
-    private fun onSignedIn() {
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        binding.tvStatus.text = "Connected: ${account?.email}"
-        updateUi(signedIn = true)
-    }
-
-    private fun updateUi(signedIn: Boolean) {
-        binding.btnSignIn.visibility = if (signedIn) android.view.View.GONE else android.view.View.VISIBLE
-        binding.btnSignOut.visibility = if (signedIn) android.view.View.VISIBLE else android.view.View.GONE
-        if (!signedIn) {
-            binding.tvStatus.text = "Not connected"
-        }
+    companion object {
+        private const val MENU_DRIVE_CONNECT = 1
+        private const val MENU_DRIVE_DISCONNECT = 2
     }
 }

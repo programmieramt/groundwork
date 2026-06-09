@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_sofort">
+
+    <fragment
+        android:id="@+id/nav_sofort"
+        android:name="com.groundwork.programmieramt.ui.sofort.SofortFragment"
+        android:label="@string/nav_sofort" />
+
+    <fragment
+        android:id="@+id/nav_team"
+        android:name="com.groundwork.programmieramt.ui.team.TeamFragment"
+        android:label="@string/nav_team" />
+
+    <fragment
+        android:id="@+id/nav_one_on_one"
+        android:name="com.groundwork.programmieramt.ui.oneonone.OneOnOneFragment"
+        android:label="@string/nav_one_on_one" />
+
+    <fragment
+        android:id="@+id/nav_team_note"
+        android:name="com.groundwork.programmieramt.ui.teamnote.TeamNoteFragment"
+        android:label="@string/nav_team_note" />
+
+</navigation>

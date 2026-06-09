@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_sofort"
+        android:icon="@drawable/ic_nav_sofort"
+        android:title="@string/nav_sofort" />
+
+    <item
+        android:id="@+id/nav_team"
+        android:icon="@drawable/ic_nav_team"
+        android:title="@string/nav_team" />
+
+    <item
+        android:id="@+id/nav_one_on_one"
+        android:icon="@drawable/ic_nav_oneonone"
+        android:title="@string/nav_one_on_one" />
+
+    <item
+        android:id="@+id/nav_team_note"
+        android:icon="@drawable/ic_nav_teamnote"
+        android:title="@string/nav_team_note" />
+
+</menu>
