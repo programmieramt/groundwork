@@ -23,11 +23,16 @@ class BooxPenCallback(
         return sqrt(dx * dx + dy * dy)
     }
 
-    override fun onBeginRawDrawing(b: Boolean, touchPoint: TouchPoint) {}
-    override fun onEndRawDrawing(b: Boolean, touchPoint: TouchPoint) {}
+    override fun onBeginRawDrawing(b: Boolean, touchPoint: TouchPoint) {
+        Timber.d("onBeginRawDrawing b=$b x=${touchPoint.x} y=${touchPoint.y}")
+    }
+    override fun onEndRawDrawing(b: Boolean, touchPoint: TouchPoint) {
+        Timber.d("onEndRawDrawing b=$b")
+    }
     override fun onRawDrawingTouchPointMoveReceived(touchPoint: TouchPoint) {}
 
     override fun onRawDrawingTouchPointListReceived(touchPointList: TouchPointList) {
+        Timber.d("onRawDrawingTouchPointListReceived: ${touchPointList.size()} points")
         if (touchPointList.size() == 0) return
 
         val points = mutableListOf<StrokePoint>()

@@ -28,7 +28,6 @@ class DrawingSurfaceView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : SurfaceView(context, attrs), SurfaceHolder.Callback {
 
-    /** Called in redrawAll() after white fill, before strokes. Set to draw the form template. */
     var drawTemplate: (Canvas, Int, Int) -> Unit = { _, _, _ -> }
 
     private val strokes = mutableListOf<Stroke>()
@@ -55,27 +54,36 @@ class DrawingSurfaceView @JvmOverloads constructor(
         holder.setFormat(PixelFormat.TRANSPARENT)
         keepScreenOn = true
         holder.addCallback(this)
+        Timber.d("init: view created, model=${android.os.Build.MODEL}")
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         viewTreeObserver.addOnScrollChangedListener(scrollChangedListener)
+        Timber.d("onAttachedToWindow")
     }
 
     override fun onDetachedFromWindow() {
         viewTreeObserver.removeOnScrollChangedListener(scrollChangedListener)
         super.onDetachedFromWindow()
+        Timber.d("onDetachedFromWindow")
     }
 
-    // --- SurfaceHolder.Callback ---
-
     override fun surfaceCreated(holder: SurfaceHolder) {
+        Timber.d("surfaceCreated: size=${width}x${height}")
         initTouchHelper()
         redrawAll()
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        updateLimitRect()
+        Timber.d("surfaceChanged: ${width}x${height} format=$format")
+        if (touchHelper != null) {
+            touchHelper?.setRawDrawingEnabled(false)
+            updateLimitRect()
+            touchHelper?.setRawDrawingEnabled(true)
+            touchHelper?.isRawDrawingRenderEnabled = true
+            Timber.d("surfaceChanged: raw drawing re-enabled after limitRect update")
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             systemGestureExclusionRects = listOf(Rect(0, 0, width, height))
         }
@@ -83,20 +91,22 @@ class DrawingSurfaceView @JvmOverloads constructor(
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
+        Timber.d("surfaceDestroyed")
         touchHelper?.setRawDrawingEnabled(false)
         touchHelper?.isRawDrawingRenderEnabled = false
         touchHelper?.closeRawDrawing()
     }
 
-    // --- TouchHelper ---
-
     private fun initTouchHelper() {
+        Timber.d("initTouchHelper: attempting TouchHelper.create")
         val penCallback = BooxPenCallback(
             onStrokeAdded = { stroke ->
+                Timber.d("onStrokeAdded: ${stroke.strokePoints.size} points")
                 strokes.add(stroke)
                 redrawAll()
             },
             onStrokeErased = { id ->
+                Timber.d("onStrokeErased: $id")
                 strokes.removeAll { it.strokeId == id }
                 redrawAll()
             },
@@ -105,15 +115,18 @@ class DrawingSurfaceView @JvmOverloads constructor(
         try {
             touchHelper = TouchHelper.create(this, penCallback)
             isBooxDevice = true
+            Timber.d("TouchHelper.create SUCCESS on ${android.os.Build.MODEL}")
             touchHelper?.setStrokeWidth(3.0f)
             touchHelper?.setStrokeColor(Color.BLACK)
             updateLimitRect()
             touchHelper?.openRawDrawing()
+            Timber.d("openRawDrawing called")
+            touchHelper?.setStrokeStyle(TouchHelper.STROKE_STYLE_PENCIL)
             touchHelper?.setRawDrawingEnabled(true)
             touchHelper?.isRawDrawingRenderEnabled = true
-            Timber.i("Boox TouchHelper initialized on ${android.os.Build.MODEL}")
+            Timber.d("setRawDrawingEnabled(true) done")
         } catch (e: Throwable) {
-            Timber.w(e, "TouchHelper unavailable, using MotionEvent fallback")
+            Timber.w(e, "TouchHelper.create FAILED — using MotionEvent fallback")
             touchHelper = null
             isBooxDevice = false
         }
@@ -121,15 +134,10 @@ class DrawingSurfaceView @JvmOverloads constructor(
 
     private fun updateLimitRect() {
         val th = touchHelper ?: return
-        val location = IntArray(2)
-        getLocationOnScreen(location)
-        th.setLimitRect(
-            Rect(location[0], location[1], location[0] + width, location[1] + height),
-            ArrayList()
-        )
+        val rect = Rect(0, 0, width, height)
+        Timber.d("updateLimitRect (local): $rect")
+        th.setLimitRect(rect, ArrayList())
     }
-
-    // --- JSON serialisation ---
 
     fun getStrokesJson(): String {
         if (strokes.isEmpty()) return ""
@@ -141,10 +149,9 @@ class DrawingSurfaceView @JvmOverloads constructor(
         if (json.isNotBlank() && json.startsWith("[")) {
             try { strokesAdapter.fromJson(json)?.let { strokes.addAll(it) } } catch (_: Exception) {}
         }
+        Timber.d("setStrokesJson: loaded ${strokes.size} strokes")
         post { redrawAll() }
     }
-
-    // --- Touch events ---
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
@@ -152,10 +159,11 @@ class DrawingSurfaceView @JvmOverloads constructor(
             MotionEvent.ACTION_UP,
             MotionEvent.ACTION_CANCEL -> parent?.requestDisallowInterceptTouchEvent(false)
         }
-        if (isBooxDevice) return true
 
         val toolType = event.getToolType(0)
-        if (toolType != MotionEvent.TOOL_TYPE_STYLUS && toolType != MotionEvent.TOOL_TYPE_FINGER) return true
+        if (toolType != MotionEvent.TOOL_TYPE_STYLUS &&
+            toolType != MotionEvent.TOOL_TYPE_FINGER &&
+            toolType != MotionEvent.TOOL_TYPE_ERASER) return true
 
         val x = (10 * event.x).roundToInt() / 10.0f
         val y = (10 * event.y).roundToInt() / 10.0f
@@ -189,8 +197,6 @@ class DrawingSurfaceView @JvmOverloads constructor(
         }
         return true
     }
-
-    // --- Drawing ---
 
     fun redrawAll() {
         touchHelper?.setRawDrawingEnabled(false)
