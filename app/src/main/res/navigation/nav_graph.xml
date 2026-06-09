@@ -4,11 +4,23 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/nav_sofort">
 
+    <!-- SOFORT -->
     <fragment
         android:id="@+id/nav_sofort"
         android:name="com.groundwork.programmieramt.ui.sofort.SofortFragment"
-        android:label="@string/nav_sofort" />
+        android:label="@string/nav_sofort">
+        <action
+            android:id="@+id/action_sofort_to_detail"
+            app:destination="@id/nav_sofort_detail" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_sofort_detail"
+        android:name="com.groundwork.programmieramt.ui.sofort.SofortDetailFragment"
+        android:label="@string/label_sofort_detail">
+        <argument android:name="note_id" app:argType="long" android:defaultValue="0" />
+    </fragment>
 
+    <!-- TEAM -->
     <fragment
         android:id="@+id/nav_team"
         android:name="com.groundwork.programmieramt.ui.team.TeamFragment"
@@ -17,25 +29,43 @@
             android:id="@+id/action_team_to_detail"
             app:destination="@id/nav_team_member_detail" />
     </fragment>
-
     <fragment
         android:id="@+id/nav_team_member_detail"
         android:name="com.groundwork.programmieramt.ui.team.TeamMemberDetailFragment"
         android:label="@string/label_teammitglied">
-        <argument
-            android:name="member_id"
-            app:argType="long"
-            android:defaultValue="0" />
+        <argument android:name="member_id" app:argType="long" android:defaultValue="0" />
     </fragment>
 
+    <!-- 1:1 -->
     <fragment
         android:id="@+id/nav_one_on_one"
         android:name="com.groundwork.programmieramt.ui.oneonone.OneOnOneFragment"
-        android:label="@string/nav_one_on_one" />
+        android:label="@string/nav_one_on_one">
+        <action
+            android:id="@+id/action_one_on_one_to_detail"
+            app:destination="@id/nav_one_on_one_detail" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_one_on_one_detail"
+        android:name="com.groundwork.programmieramt.ui.oneonone.OneOnOneDetailFragment"
+        android:label="@string/label_one_on_one_detail">
+        <argument android:name="session_id" app:argType="long" android:defaultValue="0" />
+    </fragment>
 
+    <!-- BEOBACHTUNGEN -->
     <fragment
         android:id="@+id/nav_team_note"
         android:name="com.groundwork.programmieramt.ui.teamnote.TeamNoteFragment"
-        android:label="@string/nav_team_note" />
+        android:label="@string/nav_team_note">
+        <action
+            android:id="@+id/action_team_note_to_detail"
+            app:destination="@id/nav_team_note_detail" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_team_note_detail"
+        android:name="com.groundwork.programmieramt.ui.teamnote.TeamNoteDetailFragment"
+        android:label="@string/label_team_note_detail">
+        <argument android:name="note_id" app:argType="long" android:defaultValue="0" />
+    </fragment>
 
 </navigation>

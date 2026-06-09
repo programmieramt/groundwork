@@ -29,6 +29,50 @@
     <string name="section_sensibles">SENSIBLES / WICHTIG ZU WISSEN</string>
 
     <string name="label_teammitglied">Teammitglied</string>
+    <string name="label_sofort_detail">Sofort</string>
+    <string name="label_one_on_one_detail">1:1 Notizen</string>
+    <string name="label_team_note_detail">Beobachtung</string>
+
+    <!-- 1:1 fields -->
+    <string name="field_datum">Datum</string>
+    <string name="field_thema">Thema / Was auf dem Herzen liegt</string>
+    <string name="field_echtes_problem">Das echte Problem / Kern</string>
+    <string name="field_vereinbarungen">Wie kann ich helfen / Vereinbarungen</string>
+    <string name="field_eindruck">Mein Eindruck / Stimmung</string>
+    <string name="field_offene_punkte">Offene Punkte für nächstes 1:1</string>
+
+    <!-- 1:1 section headers -->
+    <string name="section_thema">THEMA / WAS AUF DEM HERZEN LIEGT</string>
+    <string name="section_echtes_problem">DAS ECHTE PROBLEM / KERN</string>
+    <string name="section_vereinbarungen">WIE KANN ICH HELFEN / VEREINBARUNGEN</string>
+    <string name="section_eindruck">MEIN EINDRUCK / STIMMUNG</string>
+    <string name="section_offene_punkte">OFFENE PUNKTE FÜR NÄCHSTES 1:1</string>
+
+    <!-- Team note fields -->
+    <string name="field_kontext_meeting">Kontext / Meeting</string>
+    <string name="field_beobachtungen">Beobachtungen</string>
+    <string name="field_stimmung_dynamik">Stimmung / Dynamik</string>
+    <string name="field_spannungen">Spannungen / Offene Punkte</string>
+    <string name="field_massnahmen">Massnahmen / Follow-Up</string>
+
+    <!-- Team note section headers -->
+    <string name="section_beobachtungen">BEOBACHTUNGEN</string>
+    <string name="section_stimmung">STIMMUNG / DYNAMIK</string>
+    <string name="section_spannungen">SPANNUNGEN / OFFENE PUNKTE</string>
+    <string name="section_massnahmen">MASSNAHMEN / FOLLOW-UP</string>
+
+    <!-- Sofort fields -->
+    <string name="field_kategorie">Kontext / Kategorie</string>
+    <string name="field_capture">Capture</string>
+    <string name="field_followup">Follow-Up / Action</string>
+
+    <!-- Sofort section headers -->
+    <string name="section_capture">CAPTURE</string>
+    <string name="section_followup">FOLLOW-UP / ACTION</string>
+
+    <!-- Validation -->
+    <string name="error_member_required">Bitte Teammitglied auswählen</string>
+
     <string name="action_save">Speichern</string>
     <string name="action_delete">Löschen</string>
 </resources>
