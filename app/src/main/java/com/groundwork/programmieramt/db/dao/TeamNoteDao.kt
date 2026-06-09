@@ -9,6 +9,9 @@ interface TeamNoteDao {
     @Query("SELECT * FROM team_notes ORDER BY datum DESC")
     fun getAll(): Flow<List<TeamNoteEntity>>
 
+    @Query("SELECT * FROM team_notes ORDER BY datum DESC")
+    suspend fun getAllOnce(): List<TeamNoteEntity>
+
     @Query("SELECT * FROM team_notes WHERE id = :id")
     suspend fun getById(id: Long): TeamNoteEntity?
 

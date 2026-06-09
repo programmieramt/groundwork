@@ -9,6 +9,9 @@ interface OneOnOneSessionDao {
     @Query("SELECT * FROM one_on_one_sessions ORDER BY datum DESC")
     fun getAll(): Flow<List<OneOnOneSessionEntity>>
 
+    @Query("SELECT * FROM one_on_one_sessions ORDER BY datum DESC")
+    suspend fun getAllOnce(): List<OneOnOneSessionEntity>
+
     @Query("SELECT * FROM one_on_one_sessions WHERE teamMemberId = :memberId ORDER BY datum DESC")
     fun getByMember(memberId: Long): Flow<List<OneOnOneSessionEntity>>
 

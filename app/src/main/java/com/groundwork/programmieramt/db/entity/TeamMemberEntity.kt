@@ -2,7 +2,9 @@ package com.groundwork.programmieramt.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 @Entity(tableName = "team_members")
 data class TeamMemberEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

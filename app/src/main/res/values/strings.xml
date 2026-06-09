@@ -75,4 +75,14 @@
 
     <string name="action_save">Speichern</string>
     <string name="action_delete">Löschen</string>
+
+    <!-- Settings / WebDAV -->
+    <string name="settings_webdav_url">WebDAV URL</string>
+    <string name="settings_username">Benutzername</string>
+    <string name="settings_password">Passwort</string>
+    <string name="settings_trust_all_certs">SSL-Zertifikat ignorieren (selbstsigniert)</string>
+    <string name="settings_test_connection">Verbindung testen</string>
+    <string name="settings_sync_now">Jetzt synchronisieren</string>
+    <string name="settings_saved">Einstellungen gespeichert</string>
+    <string name="settings_title">Einstellungen</string>
 </resources>

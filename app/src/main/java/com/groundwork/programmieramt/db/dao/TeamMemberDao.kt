@@ -9,6 +9,9 @@ interface TeamMemberDao {
     @Query("SELECT * FROM team_members ORDER BY name ASC")
     fun getAll(): Flow<List<TeamMemberEntity>>
 
+    @Query("SELECT * FROM team_members ORDER BY name ASC")
+    suspend fun getAllOnce(): List<TeamMemberEntity>
+
     @Query("SELECT * FROM team_members WHERE id = :id")
     suspend fun getById(id: Long): TeamMemberEntity?
 

@@ -9,6 +9,9 @@ interface SofortNoteDao {
     @Query("SELECT * FROM sofort_notes ORDER BY datum DESC")
     fun getAll(): Flow<List<SofortNoteEntity>>
 
+    @Query("SELECT * FROM sofort_notes ORDER BY datum DESC")
+    suspend fun getAllOnce(): List<SofortNoteEntity>
+
     @Query("SELECT * FROM sofort_notes WHERE id = :id")
     suspend fun getById(id: Long): SofortNoteEntity?
 
