@@ -17,7 +17,7 @@
         android:id="@+id/nav_sofort_detail"
         android:name="com.groundwork.programmieramt.ui.sofort.SofortDetailFragment"
         android:label="@string/label_sofort_detail">
-        <argument android:name="note_id" app:argType="long" android:defaultValue="0" />
+        <argument android:name="note_id" app:argType="long" android:defaultValue="0L" />
     </fragment>
 
     <!-- TEAM -->
@@ -33,7 +33,7 @@
         android:id="@+id/nav_team_member_detail"
         android:name="com.groundwork.programmieramt.ui.team.TeamMemberDetailFragment"
         android:label="@string/label_teammitglied">
-        <argument android:name="member_id" app:argType="long" android:defaultValue="0" />
+        <argument android:name="member_id" app:argType="long" android:defaultValue="0L" />
     </fragment>
 
     <!-- 1:1 -->
@@ -49,7 +49,7 @@
         android:id="@+id/nav_one_on_one_detail"
         android:name="com.groundwork.programmieramt.ui.oneonone.OneOnOneDetailFragment"
         android:label="@string/label_one_on_one_detail">
-        <argument android:name="session_id" app:argType="long" android:defaultValue="0" />
+        <argument android:name="session_id" app:argType="long" android:defaultValue="0L" />
     </fragment>
 
     <!-- BEOBACHTUNGEN -->
@@ -65,7 +65,7 @@
         android:id="@+id/nav_team_note_detail"
         android:name="com.groundwork.programmieramt.ui.teamnote.TeamNoteDetailFragment"
         android:label="@string/label_team_note_detail">
-        <argument android:name="note_id" app:argType="long" android:defaultValue="0" />
+        <argument android:name="note_id" app:argType="long" android:defaultValue="0L" />
     </fragment>
 
     <!-- SETTINGS -->
