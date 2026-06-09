@@ -104,12 +104,6 @@ android {
 dependencies {
     implementation 'com.jakewharton.timber:timber:5.0.1'
 
-    // Google Sign-In + Drive
-    implementation 'com.google.android.gms:play-services-auth:21.4.0'
-    implementation 'com.google.api-client:google-api-client-android:2.8.1'
-    implementation 'com.google.apis:google-api-services-drive:v3-rev20250829-2.0.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2'
-
     // AndroidX
     implementation "androidx.activity:activity-ktx:1.11.0"
     implementation 'androidx.navigation:navigation-fragment-ktx:2.9.4'
@@ -157,4 +151,3 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
 }
 
-apply plugin: 'com.google.gms.google-services'
