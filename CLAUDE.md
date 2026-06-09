@@ -2,6 +2,8 @@
 
 Android app for team leadership workflows — 1on1 templates, PDF management, Google Drive sync. Optimized for Boox e-ink devices (Air 4C, Palma 2 Pro).
 
+**GitHub:** https://github.com/programmieramt/groundwork
+
 ## Project
 
 - **App name**: Groundwork
