@@ -50,8 +50,8 @@ class DrawingSurfaceView @JvmOverloads constructor(
     }
 
     init {
-        setZOrderOnTop(true)
-        holder.setFormat(PixelFormat.TRANSPARENT)
+        setZOrderMediaOverlay(false)
+        holder.setFormat(PixelFormat.OPAQUE)
         keepScreenOn = true
         holder.addCallback(this)
     }
@@ -128,6 +128,7 @@ class DrawingSurfaceView @JvmOverloads constructor(
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                parent?.requestDisallowInterceptTouchEvent(true)
                 activeFallbackPoints.clear()
                 fallbackFirstTimestamp = System.currentTimeMillis()
                 activeFallbackPoints.add(StrokePoint(x, y, pressure))
@@ -160,12 +161,9 @@ class DrawingSurfaceView @JvmOverloads constructor(
     fun redrawAll() {
         val canvas = holder.lockCanvas() ?: return
         try {
-            canvas.drawColor(Color.TRANSPARENT, android.graphics.PorterDuff.Mode.CLEAR)
+            canvas.drawColor(Color.WHITE)
             for (stroke in currentStrokes()) {
                 drawStroke(canvas, stroke)
-            }
-            for (point in activeFallbackPoints) {
-                // live preview handled separately via drawFallbackInProgress
             }
         } finally {
             holder.unlockCanvasAndPost(canvas)
@@ -175,7 +173,7 @@ class DrawingSurfaceView @JvmOverloads constructor(
     private fun drawFallbackInProgress() {
         val canvas = holder.lockCanvas() ?: return
         try {
-            canvas.drawColor(Color.TRANSPARENT, android.graphics.PorterDuff.Mode.CLEAR)
+            canvas.drawColor(Color.WHITE)
             for (stroke in currentStrokes()) {
                 drawStroke(canvas, stroke)
             }

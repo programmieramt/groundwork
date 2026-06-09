@@ -27,7 +27,8 @@
                     android:id="@+id/et_member"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none" />
+                    android:inputType="textPersonName|textCapWords"
+                    android:completionThreshold="1" />
             </com.google.android.material.textfield.TextInputLayout>
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_datum"
@@ -92,83 +93,38 @@
 
         <!-- THEMA -->
         <include layout="@layout/section_header_blue" android:id="@+id/header_thema" />
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.groundwork.programmieramt.pen.PenFieldView
+            android:id="@+id/pen_thema"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/field_thema">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_thema"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="3"
-                android:gravity="top"
-                android:inputType="textMultiLine|textCapSentences" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="200dp" />
 
         <!-- ECHTES PROBLEM -->
         <include layout="@layout/section_header_blue" android:id="@+id/header_problem" />
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.groundwork.programmieramt.pen.PenFieldView
+            android:id="@+id/pen_echtes_problem"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/field_echtes_problem">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_echtes_problem"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="3"
-                android:gravity="top"
-                android:inputType="textMultiLine|textCapSentences" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="200dp" />
 
         <!-- VEREINBARUNGEN -->
         <include layout="@layout/section_header_blue" android:id="@+id/header_vereinbarungen" />
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.groundwork.programmieramt.pen.PenFieldView
+            android:id="@+id/pen_vereinbarungen"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/field_vereinbarungen">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_vereinbarungen"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="3"
-                android:gravity="top"
-                android:inputType="textMultiLine|textCapSentences" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="200dp" />
 
         <!-- EINDRUCK -->
         <include layout="@layout/section_header_blue" android:id="@+id/header_eindruck" />
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.groundwork.programmieramt.pen.PenFieldView
+            android:id="@+id/pen_eindruck"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/field_eindruck">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_eindruck"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="2"
-                android:gravity="top"
-                android:inputType="textMultiLine|textCapSentences" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="200dp" />
 
         <!-- OFFENE PUNKTE -->
         <include layout="@layout/section_header_blue" android:id="@+id/header_offene_punkte" />
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.groundwork.programmieramt.pen.PenFieldView
+            android:id="@+id/pen_offene_punkte"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/field_offene_punkte">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_offene_punkte"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="2"
-                android:gravity="top"
-                android:inputType="textMultiLine|textCapSentences" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="200dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_save"

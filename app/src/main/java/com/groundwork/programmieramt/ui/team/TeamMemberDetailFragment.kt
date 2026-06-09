@@ -47,7 +47,6 @@ class TeamMemberDetailFragment : Fragment() {
         }
 
         binding.etErstkontakt.setOnClickListener { showDatePicker() }
-
         binding.btnSave.setOnClickListener { save() }
     }
 
@@ -69,11 +68,11 @@ class TeamMemberDetailFragment : Fragment() {
             if (member.erstkontakt > 0L) {
                 binding.etErstkontakt.setText(dateFormat.format(Date(member.erstkontakt)))
             }
-            binding.etErsterEindruck.setText(member.ersterEindruck)
-            binding.etStaerken.setText(member.staerken)
-            binding.etEntwicklungsfeld.setText(member.entwicklungsfeld)
-            binding.etMotivation.setText(member.motivation)
-            binding.etSensibles.setText(member.sensibles)
+            binding.penErsterEindruck.setStrokesJson(member.ersterEindruck)
+            binding.penStaerken.setStrokesJson(member.staerken)
+            binding.penEntwicklungsfeld.setStrokesJson(member.entwicklungsfeld)
+            binding.penMotivation.setStrokesJson(member.motivation)
+            binding.penSensibles.setStrokesJson(member.sensibles)
         }
     }
 
@@ -100,11 +99,11 @@ class TeamMemberDetailFragment : Fragment() {
             name = name,
             rolle = binding.etRolle.text?.toString()?.trim() ?: "",
             erstkontakt = erstkontaktMs,
-            ersterEindruck = binding.etErsterEindruck.text?.toString()?.trim() ?: "",
-            staerken = binding.etStaerken.text?.toString()?.trim() ?: "",
-            entwicklungsfeld = binding.etEntwicklungsfeld.text?.toString()?.trim() ?: "",
-            motivation = binding.etMotivation.text?.toString()?.trim() ?: "",
-            sensibles = binding.etSensibles.text?.toString()?.trim() ?: "",
+            ersterEindruck = binding.penErsterEindruck.getStrokesJson(),
+            staerken = binding.penStaerken.getStrokesJson(),
+            entwicklungsfeld = binding.penEntwicklungsfeld.getStrokesJson(),
+            motivation = binding.penMotivation.getStrokesJson(),
+            sensibles = binding.penSensibles.getStrokesJson(),
             updatedAt = System.currentTimeMillis()
         )
         viewModel.save(entity)

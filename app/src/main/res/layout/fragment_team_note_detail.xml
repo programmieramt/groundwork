@@ -49,67 +49,31 @@
 
         <!-- BEOBACHTUNGEN -->
         <include layout="@layout/section_header_orange" android:id="@+id/header_beobachtungen" />
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.groundwork.programmieramt.pen.PenFieldView
+            android:id="@+id/pen_beobachtungen"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/field_beobachtungen">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_beobachtungen"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="4"
-                android:gravity="top"
-                android:inputType="textMultiLine|textCapSentences" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="200dp" />
 
         <!-- STIMMUNG / DYNAMIK -->
         <include layout="@layout/section_header_orange" android:id="@+id/header_stimmung" />
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.groundwork.programmieramt.pen.PenFieldView
+            android:id="@+id/pen_stimmung"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/field_stimmung_dynamik">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_stimmung"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="3"
-                android:gravity="top"
-                android:inputType="textMultiLine|textCapSentences" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="200dp" />
 
         <!-- SPANNUNGEN / OFFENE PUNKTE -->
         <include layout="@layout/section_header_orange" android:id="@+id/header_spannungen" />
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.groundwork.programmieramt.pen.PenFieldView
+            android:id="@+id/pen_spannungen"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/field_spannungen">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_spannungen"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="3"
-                android:gravity="top"
-                android:inputType="textMultiLine|textCapSentences" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="200dp" />
 
         <!-- MASSNAHMEN / FOLLOW-UP -->
         <include layout="@layout/section_header_orange" android:id="@+id/header_massnahmen" />
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.groundwork.programmieramt.pen.PenFieldView
+            android:id="@+id/pen_massnahmen"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/field_massnahmen">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_massnahmen"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="3"
-                android:gravity="top"
-                android:inputType="textMultiLine|textCapSentences" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="200dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_save"

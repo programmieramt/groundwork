@@ -62,10 +62,10 @@ class TeamNoteDetailFragment : Fragment() {
             datumMs = note.datum
             binding.etDatum.setText(datumMs.toGermanDate())
             binding.etKontext.setText(note.kontextMeeting)
-            binding.etBeobachtungen.setText(note.beobachtungen)
-            binding.etStimmung.setText(note.stimmungDynamik)
-            binding.etSpannungen.setText(note.spannungenOffenePunkte)
-            binding.etMassnahmen.setText(note.massnahmenFollowUp)
+            binding.penBeobachtungen.setStrokesJson(note.beobachtungen)
+            binding.penStimmung.setStrokesJson(note.stimmungDynamik)
+            binding.penSpannungen.setStrokesJson(note.spannungenOffenePunkte)
+            binding.penMassnahmen.setStrokesJson(note.massnahmenFollowUp)
         }
     }
 
@@ -83,10 +83,10 @@ class TeamNoteDetailFragment : Fragment() {
             id = existingId,
             datum = datumMs,
             kontextMeeting = binding.etKontext.text?.toString()?.trim() ?: "",
-            beobachtungen = binding.etBeobachtungen.text?.toString()?.trim() ?: "",
-            stimmungDynamik = binding.etStimmung.text?.toString()?.trim() ?: "",
-            spannungenOffenePunkte = binding.etSpannungen.text?.toString()?.trim() ?: "",
-            massnahmenFollowUp = binding.etMassnahmen.text?.toString()?.trim() ?: "",
+            beobachtungen = binding.penBeobachtungen.getStrokesJson(),
+            stimmungDynamik = binding.penStimmung.getStrokesJson(),
+            spannungenOffenePunkte = binding.penSpannungen.getStrokesJson(),
+            massnahmenFollowUp = binding.penMassnahmen.getStrokesJson(),
             updatedAt = System.currentTimeMillis()
         ))
         findNavController().popBackStack()

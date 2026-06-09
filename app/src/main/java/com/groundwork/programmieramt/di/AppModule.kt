@@ -1,5 +1,6 @@
 package com.groundwork.programmieramt.di
 
+import com.groundwork.programmieramt.pen.UuidAdapter
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -13,5 +14,5 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMoshi(): Moshi = Moshi.Builder().build()
+    fun provideMoshi(): Moshi = Moshi.Builder().add(UuidAdapter()).build()
 }

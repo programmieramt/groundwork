@@ -38,6 +38,8 @@ class OneOnOneViewModel @Inject constructor(
 
     suspend fun countByMember(memberId: Long): Int = sessionDao.countByMember(memberId)
 
+    suspend fun insertMember(entity: TeamMemberEntity): Long = memberDao.insert(entity)
+
     fun save(entity: OneOnOneSessionEntity) = viewModelScope.launch {
         val id = sessionDao.insert(entity)
         syncManager.uploadSession(if (entity.id == 0L) entity.copy(id = id) else entity)

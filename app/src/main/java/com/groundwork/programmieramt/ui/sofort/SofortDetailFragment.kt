@@ -60,8 +60,8 @@ class SofortDetailFragment : Fragment() {
             datumMs = note.datum
             binding.etDatum.setText(datumMs.toGermanDate())
             binding.etKategorie.setText(note.kategorie)
-            binding.etCapture.setText(note.capture)
-            binding.etFollowup.setText(note.followUp)
+            binding.penCapture.setStrokesJson(note.capture)
+            binding.penFollowup.setStrokesJson(note.followUp)
         }
     }
 
@@ -79,8 +79,8 @@ class SofortDetailFragment : Fragment() {
             id = existingId,
             datum = datumMs,
             kategorie = binding.etKategorie.text?.toString()?.trim() ?: "",
-            capture = binding.etCapture.text?.toString()?.trim() ?: "",
-            followUp = binding.etFollowup.text?.toString()?.trim() ?: "",
+            capture = binding.penCapture.getStrokesJson(),
+            followUp = binding.penFollowup.getStrokesJson(),
             updatedAt = System.currentTimeMillis()
         ))
         findNavController().popBackStack()

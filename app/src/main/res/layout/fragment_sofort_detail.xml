@@ -50,36 +50,18 @@
         <!-- CAPTURE -->
         <include layout="@layout/section_header_blue" android:id="@+id/header_capture"
             android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.groundwork.programmieramt.pen.PenFieldView
+            android:id="@+id/pen_capture"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/field_capture">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_capture"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="8"
-                android:gravity="top"
-                android:inputType="textMultiLine|textCapSentences" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="280dp" />
 
         <!-- FOLLOW-UP -->
         <include layout="@layout/section_header_blue" android:id="@+id/header_followup"
             android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.groundwork.programmieramt.pen.PenFieldView
+            android:id="@+id/pen_followup"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/field_followup">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_followup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="3"
-                android:gravity="top"
-                android:inputType="textMultiLine|textCapSentences" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="200dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_save"

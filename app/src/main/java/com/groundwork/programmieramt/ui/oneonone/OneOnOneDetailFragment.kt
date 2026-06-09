@@ -68,6 +68,7 @@ class OneOnOneDetailFragment : Fragment() {
         binding.etMember.setAdapter(adapter)
         binding.etMember.setOnItemClickListener { _, _, position, _ ->
             selectedMember = members[position]
+            binding.tilMember.error = null
         }
         selectedMember?.let { binding.etMember.setText(it.name, false) }
     }
@@ -78,11 +79,11 @@ class OneOnOneDetailFragment : Fragment() {
             existingId = session.id
             datumMs = session.datum
             binding.etDatum.setText(datumMs.toGermanDate())
-            binding.etThema.setText(session.thema)
-            binding.etEchtesProblem.setText(session.echteProblem)
-            binding.etVereinbarungen.setText(session.vereinbarungen)
-            binding.etEindruck.setText(session.eindruck)
-            binding.etOffenePunkte.setText(session.offenePunkte)
+            binding.penThema.setStrokesJson(session.thema)
+            binding.penEchtesProblem.setStrokesJson(session.echteProblem)
+            binding.penVereinbarungen.setStrokesJson(session.vereinbarungen)
+            binding.penEindruck.setStrokesJson(session.eindruck)
+            binding.penOffenePunkte.setStrokesJson(session.offenePunkte)
             viewModel.members.value.find { it.id == session.teamMemberId }?.let {
                 selectedMember = it
                 binding.etMember.setText(it.name, false)
@@ -100,14 +101,21 @@ class OneOnOneDetailFragment : Fragment() {
     }
 
     private fun save() {
-        val member = selectedMember
-        if (member == null) {
+        val nameText = binding.etMember.text?.toString()?.trim() ?: ""
+        if (nameText.isBlank()) {
             binding.tilMember.error = getString(R.string.error_member_required)
             return
         }
         binding.tilMember.error = null
 
         viewLifecycleOwner.lifecycleScope.launch {
+            val member = selectedMember
+                ?: viewModel.members.value.find { it.name.equals(nameText, ignoreCase = true) }
+                ?: run {
+                    val id = viewModel.insertMember(TeamMemberEntity(name = nameText))
+                    TeamMemberEntity(id = id, name = nameText)
+                }
+
             val sessionNr = if (existingId == 0L) viewModel.countByMember(member.id) + 1 else {
                 viewModel.getSessionById(existingId)?.sessionNumber ?: 1
             }
@@ -116,11 +124,11 @@ class OneOnOneDetailFragment : Fragment() {
                 teamMemberId = member.id,
                 datum = datumMs,
                 sessionNumber = sessionNr,
-                thema = binding.etThema.text?.toString()?.trim() ?: "",
-                echteProblem = binding.etEchtesProblem.text?.toString()?.trim() ?: "",
-                vereinbarungen = binding.etVereinbarungen.text?.toString()?.trim() ?: "",
-                eindruck = binding.etEindruck.text?.toString()?.trim() ?: "",
-                offenePunkte = binding.etOffenePunkte.text?.toString()?.trim() ?: "",
+                thema = binding.penThema.getStrokesJson(),
+                echteProblem = binding.penEchtesProblem.getStrokesJson(),
+                vereinbarungen = binding.penVereinbarungen.getStrokesJson(),
+                eindruck = binding.penEindruck.getStrokesJson(),
+                offenePunkte = binding.penOffenePunkte.getStrokesJson(),
                 updatedAt = System.currentTimeMillis()
             ))
             findNavController().popBackStack()
