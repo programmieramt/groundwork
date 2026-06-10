@@ -14,7 +14,10 @@ import kotlin.math.sqrt
 class BooxPenCallback(
     private val onStrokeAdded: (Stroke) -> Unit,
     private val onStrokeErased: (UUID) -> Unit,
-    private val currentStrokes: () -> List<Stroke>
+    private val currentStrokes: () -> List<Stroke>,
+    private val currentColor: () -> Int,
+    private val currentStrokeWidth: () -> Float,
+    private val currentIsMarker: () -> Boolean
 ) : RawInputCallback() {
 
     private fun distance(x1: Float, y1: Float, x2: Float, y2: Float): Double {
@@ -58,7 +61,10 @@ class BooxPenCallback(
         onStrokeAdded(Stroke(
             strokeId = UUID.randomUUID(),
             timestamp = System.currentTimeMillis(),
-            strokePoints = points
+            strokePoints = points,
+            color = currentColor(),
+            strokeWidth = currentStrokeWidth(),
+            isMarker = currentIsMarker()
         ))
     }
 

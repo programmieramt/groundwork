@@ -9,5 +9,6 @@ data class Stroke(
     var timestamp: Long = 0L,
     var strokePoints: List<StrokePoint>,
     var color: Int = -16777216,
-    var strokeWidth: Float = 3.0f
+    var strokeWidth: Float = 3.0f,
+    var isMarker: Boolean = false
 )

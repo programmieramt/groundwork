@@ -5,6 +5,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PixelFormat
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
 import android.os.Build
 import android.util.AttributeSet
@@ -36,6 +38,15 @@ class DrawingSurfaceView @JvmOverloads constructor(
 
     private val activeFallbackPoints = mutableListOf<StrokePoint>()
     private var fallbackFirstTimestamp = 0L
+
+    var currentColor: Int = Color.BLACK
+        private set
+    var currentStrokeWidth: Float = 3.0f
+        private set
+    var currentIsMarker: Boolean = false
+        private set
+
+    private val markerXfermode = PorterDuffXfermode(PorterDuff.Mode.MULTIPLY)
 
     private val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -110,18 +121,21 @@ class DrawingSurfaceView @JvmOverloads constructor(
                 strokes.removeAll { it.strokeId == id }
                 redrawAll()
             },
-            currentStrokes = { strokes.toList() }
+            currentStrokes = { strokes.toList() },
+            currentColor = { currentColor },
+            currentStrokeWidth = { currentStrokeWidth },
+            currentIsMarker = { currentIsMarker }
         )
         try {
             touchHelper = TouchHelper.create(this, penCallback)
             isBooxDevice = true
             Timber.d("TouchHelper.create SUCCESS on ${android.os.Build.MODEL}")
-            touchHelper?.setStrokeWidth(3.0f)
-            touchHelper?.setStrokeColor(Color.BLACK)
+            touchHelper?.setStrokeWidth(currentStrokeWidth)
+            touchHelper?.setStrokeColor(currentColor)
             updateLimitRect()
             touchHelper?.openRawDrawing()
             Timber.d("openRawDrawing called")
-            touchHelper?.setStrokeStyle(TouchHelper.STROKE_STYLE_PENCIL)
+            touchHelper?.setStrokeStyle(if (currentIsMarker) TouchHelper.STROKE_STYLE_MARKER else TouchHelper.STROKE_STYLE_PENCIL)
             touchHelper?.setRawDrawingEnabled(true)
             touchHelper?.isRawDrawingRenderEnabled = true
             Timber.d("setRawDrawingEnabled(true) done")
@@ -130,6 +144,15 @@ class DrawingSurfaceView @JvmOverloads constructor(
             touchHelper = null
             isBooxDevice = false
         }
+    }
+
+    fun setTool(color: Int, strokeWidth: Float, isMarker: Boolean) {
+        currentColor = color
+        currentStrokeWidth = strokeWidth
+        currentIsMarker = isMarker
+        touchHelper?.setStrokeColor(color)
+        touchHelper?.setStrokeWidth(strokeWidth)
+        touchHelper?.setStrokeStyle(if (isMarker) TouchHelper.STROKE_STYLE_MARKER else TouchHelper.STROKE_STYLE_PENCIL)
     }
 
     private fun updateLimitRect() {
@@ -187,7 +210,10 @@ class DrawingSurfaceView @JvmOverloads constructor(
                     val stroke = Stroke(
                         strokeId = UUID.randomUUID(),
                         timestamp = fallbackFirstTimestamp,
-                        strokePoints = activeFallbackPoints.toList()
+                        strokePoints = activeFallbackPoints.toList(),
+                        color = currentColor,
+                        strokeWidth = currentStrokeWidth,
+                        isMarker = currentIsMarker
                     )
                     strokes.add(stroke)
                     activeFallbackPoints.clear()
@@ -223,7 +249,11 @@ class DrawingSurfaceView @JvmOverloads constructor(
             canvas.drawColor(Color.WHITE)
             drawTemplate(canvas, width, height)
             for (stroke in strokes) drawStroke(canvas, stroke)
+            strokePaint.color = currentColor
+            strokePaint.strokeWidth = currentStrokeWidth
+            strokePaint.xfermode = if (currentIsMarker) markerXfermode else null
             drawPointList(canvas, activeFallbackPoints)
+            strokePaint.xfermode = null
         } finally {
             holder.unlockCanvasAndPost(canvas)
         }
@@ -232,7 +262,9 @@ class DrawingSurfaceView @JvmOverloads constructor(
     private fun drawStroke(canvas: Canvas, stroke: Stroke) {
         strokePaint.color = stroke.color
         strokePaint.strokeWidth = stroke.strokeWidth
+        strokePaint.xfermode = if (stroke.isMarker) markerXfermode else null
         drawPointList(canvas, stroke.strokePoints)
+        strokePaint.xfermode = null
     }
 
     private fun drawPointList(canvas: Canvas, points: List<StrokePoint>) {

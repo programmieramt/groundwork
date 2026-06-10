@@ -41,6 +41,13 @@ class TeamMemberDetailFragment : Fragment() {
 
         binding.drawingSurface.drawTemplate = { canvas, w, h -> FormTemplate.drawTeamMember(canvas, w, h) }
 
+        binding.penToolbar.onToolSelected = { color, strokeWidth, isMarker ->
+            binding.drawingSurface.setTool(color, strokeWidth, isMarker)
+        }
+        binding.penToolbar.currentTool().let { (color, strokeWidth, isMarker) ->
+            binding.drawingSurface.setTool(color, strokeWidth, isMarker)
+        }
+
         val memberId = arguments?.getLong(ARG_MEMBER_ID, 0L) ?: 0L
         if (memberId > 0L) loadExisting(memberId)
 

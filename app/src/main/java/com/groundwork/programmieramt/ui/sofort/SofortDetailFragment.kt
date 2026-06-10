@@ -41,6 +41,13 @@ class SofortDetailFragment : Fragment() {
 
         binding.drawingSurface.drawTemplate = { canvas, w, h -> FormTemplate.drawSofort(canvas, w, h) }
 
+        binding.penToolbar.onToolSelected = { color, strokeWidth, isMarker ->
+            binding.drawingSurface.setTool(color, strokeWidth, isMarker)
+        }
+        binding.penToolbar.currentTool().let { (color, strokeWidth, isMarker) ->
+            binding.drawingSurface.setTool(color, strokeWidth, isMarker)
+        }
+
         binding.etDatum.setText(datumMs.toGermanDate())
         binding.etDatum.setOnClickListener { showDatePicker() }
 
