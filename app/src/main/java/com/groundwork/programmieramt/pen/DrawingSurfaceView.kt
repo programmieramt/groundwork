@@ -45,6 +45,8 @@ class DrawingSurfaceView @JvmOverloads constructor(
         private set
     var currentIsMarker: Boolean = false
         private set
+    var currentIsEraser: Boolean = false
+        private set
 
     private val markerXfermode = PorterDuffXfermode(PorterDuff.Mode.MULTIPLY)
 
@@ -146,13 +148,16 @@ class DrawingSurfaceView @JvmOverloads constructor(
         }
     }
 
-    fun setTool(color: Int, strokeWidth: Float, isMarker: Boolean) {
+    fun setTool(color: Int, strokeWidth: Float, isMarker: Boolean, isEraser: Boolean = false) {
         currentColor = color
         currentStrokeWidth = strokeWidth
         currentIsMarker = isMarker
-        touchHelper?.setStrokeColor(color)
-        touchHelper?.setStrokeWidth(strokeWidth)
-        touchHelper?.setStrokeStyle(if (isMarker) TouchHelper.STROKE_STYLE_MARKER else TouchHelper.STROKE_STYLE_PENCIL)
+        currentIsEraser = isEraser
+        if (!isEraser) {
+            touchHelper?.setStrokeColor(color)
+            touchHelper?.setStrokeWidth(strokeWidth)
+            touchHelper?.setStrokeStyle(if (isMarker) TouchHelper.STROKE_STYLE_MARKER else TouchHelper.STROKE_STYLE_PENCIL)
+        }
     }
 
     private fun updateLimitRect() {
@@ -190,6 +195,14 @@ class DrawingSurfaceView @JvmOverloads constructor(
 
         val x = (10 * event.x).roundToInt() / 10.0f
         val y = (10 * event.y).roundToInt() / 10.0f
+
+        if (currentIsEraser || toolType == MotionEvent.TOOL_TYPE_ERASER) {
+            when (event.action) {
+                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> eraseAt(x, y)
+            }
+            return true
+        }
+
         val pressure = (10 * event.pressure).roundToInt() / 10.0f
 
         when (event.action) {
@@ -251,6 +264,7 @@ class DrawingSurfaceView @JvmOverloads constructor(
             for (stroke in strokes) drawStroke(canvas, stroke)
             strokePaint.color = currentColor
             strokePaint.strokeWidth = currentStrokeWidth
+            strokePaint.alpha = if (currentIsMarker) MARKER_ALPHA else 255
             strokePaint.xfermode = if (currentIsMarker) markerXfermode else null
             drawPointList(canvas, activeFallbackPoints)
             strokePaint.xfermode = null
@@ -262,6 +276,7 @@ class DrawingSurfaceView @JvmOverloads constructor(
     private fun drawStroke(canvas: Canvas, stroke: Stroke) {
         strokePaint.color = stroke.color
         strokePaint.strokeWidth = stroke.strokeWidth
+        strokePaint.alpha = if (stroke.isMarker) MARKER_ALPHA else 255
         strokePaint.xfermode = if (stroke.isMarker) markerXfermode else null
         drawPointList(canvas, stroke.strokePoints)
         strokePaint.xfermode = null
@@ -274,6 +289,14 @@ class DrawingSurfaceView @JvmOverloads constructor(
         }
     }
 
+    private fun eraseAt(x: Float, y: Float) {
+        val eraseRadius = ERASE_RADIUS_DP * resources.displayMetrics.density
+        val removed = strokes.removeAll { stroke ->
+            stroke.strokePoints.any { distance(x, y, it.x, it.y) <= eraseRadius }
+        }
+        if (removed) redrawAll()
+    }
+
     private fun distance(x1: Float, y1: Float, x2: Float, y2: Float): Double {
         val dx = abs(x1 - x2).toDouble()
         val dy = abs(y1 - y2).toDouble()
@@ -281,6 +304,8 @@ class DrawingSurfaceView @JvmOverloads constructor(
     }
 
     companion object {
+        private const val MARKER_ALPHA = 100
+        private const val ERASE_RADIUS_DP = 12f
         private val moshi: Moshi = Moshi.Builder().add(UuidAdapter()).build()
         private val strokesType = Types.newParameterizedType(List::class.java, Stroke::class.java)
         private val strokesAdapter by lazy { moshi.adapter<List<Stroke>>(strokesType) }

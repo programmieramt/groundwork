@@ -44,11 +44,11 @@ class OneOnOneDetailFragment : Fragment() {
 
         binding.drawingSurface.drawTemplate = { canvas, w, h -> FormTemplate.drawOneOnOne(canvas, w, h) }
 
-        binding.penToolbar.onToolSelected = { color, strokeWidth, isMarker ->
-            binding.drawingSurface.setTool(color, strokeWidth, isMarker)
+        binding.penToolbar.onToolSelected = { tool ->
+            binding.drawingSurface.setTool(tool.color, tool.strokeWidth, tool.isMarker, tool.isEraser)
         }
-        binding.penToolbar.currentTool().let { (color, strokeWidth, isMarker) ->
-            binding.drawingSurface.setTool(color, strokeWidth, isMarker)
+        binding.penToolbar.currentTool().let { tool ->
+            binding.drawingSurface.setTool(tool.color, tool.strokeWidth, tool.isMarker, tool.isEraser)
         }
 
         binding.etDatum.setText(datumMs.toGermanDate())
