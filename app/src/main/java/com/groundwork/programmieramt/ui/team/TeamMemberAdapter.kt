@@ -9,7 +9,8 @@ import com.groundwork.programmieramt.databinding.ItemTeamMemberBinding
 import com.groundwork.programmieramt.db.entity.TeamMemberEntity
 
 class TeamMemberAdapter(
-    private val onClick: (TeamMemberEntity) -> Unit
+    private val onClick: (TeamMemberEntity) -> Unit,
+    private val onLongClick: (TeamMemberEntity) -> Unit
 ) : ListAdapter<TeamMemberEntity, TeamMemberAdapter.ViewHolder>(DIFF) {
 
     inner class ViewHolder(private val binding: ItemTeamMemberBinding) :
@@ -19,6 +20,7 @@ class TeamMemberAdapter(
             binding.tvName.text = entity.name
             binding.tvRolle.text = entity.rolle
             binding.root.setOnClickListener { onClick(entity) }
+            binding.root.setOnLongClickListener { onLongClick(entity); true }
         }
     }
 

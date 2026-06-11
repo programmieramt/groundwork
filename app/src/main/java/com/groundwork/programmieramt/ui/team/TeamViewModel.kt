@@ -29,5 +29,6 @@ class TeamViewModel @Inject constructor(
 
     fun delete(entity: TeamMemberEntity) = viewModelScope.launch {
         dao.delete(entity)
+        syncManager.deleteTeamMember(entity.id)
     }
 }

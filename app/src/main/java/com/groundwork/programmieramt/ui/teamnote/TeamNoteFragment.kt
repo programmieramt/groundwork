@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -30,12 +31,22 @@ class TeamNoteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = TeamNoteAdapter { note ->
-            findNavController().navigate(
-                R.id.action_team_note_to_detail,
-                bundleOf("note_id" to note.id)
-            )
-        }
+        val adapter = TeamNoteAdapter(
+            onClick = { note ->
+                findNavController().navigate(
+                    R.id.action_team_note_to_detail,
+                    bundleOf("note_id" to note.id)
+                )
+            },
+            onLongClick = { note ->
+                AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.dialog_delete_title)
+                    .setMessage(R.string.dialog_delete_message)
+                    .setPositiveButton(R.string.action_delete) { _, _ -> viewModel.delete(note) }
+                    .setNegativeButton(R.string.action_cancel, null)
+                    .show()
+            }
+        )
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
 

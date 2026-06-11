@@ -80,6 +80,26 @@ class SyncManager @Inject constructor(
         }
     }
 
+    suspend fun deleteTeamMember(id: Long) = withContext(Dispatchers.IO) {
+        client.delete("groundwork/team_members/$id.json")
+            .onFailure { Timber.e(it, "deleteTeamMember failed") }
+    }
+
+    suspend fun deleteSession(id: Long) = withContext(Dispatchers.IO) {
+        client.delete("groundwork/sessions/$id.json")
+            .onFailure { Timber.e(it, "deleteSession failed") }
+    }
+
+    suspend fun deleteTeamNote(id: Long) = withContext(Dispatchers.IO) {
+        client.delete("groundwork/team_notes/$id.json")
+            .onFailure { Timber.e(it, "deleteTeamNote failed") }
+    }
+
+    suspend fun deleteSofortNote(id: Long) = withContext(Dispatchers.IO) {
+        client.delete("groundwork/sofort_notes/$id.json")
+            .onFailure { Timber.e(it, "deleteSofortNote failed") }
+    }
+
     // Pull all data from server; "newest wins" by updatedAt.
     // Team members are pulled first since sessions reference them by FK.
     suspend fun syncAll(): Result<Unit> = withContext(Dispatchers.IO) {

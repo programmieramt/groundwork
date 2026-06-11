@@ -10,7 +10,8 @@ import com.groundwork.programmieramt.db.entity.TeamNoteEntity
 import com.groundwork.programmieramt.util.toGermanDate
 
 class TeamNoteAdapter(
-    private val onClick: (TeamNoteEntity) -> Unit
+    private val onClick: (TeamNoteEntity) -> Unit,
+    private val onLongClick: (TeamNoteEntity) -> Unit
 ) : ListAdapter<TeamNoteEntity, TeamNoteAdapter.ViewHolder>(DIFF) {
 
     inner class ViewHolder(private val binding: ItemTeamNoteBinding) :
@@ -21,6 +22,7 @@ class TeamNoteAdapter(
             binding.tvKontext.text = entity.kontextMeeting.ifBlank { "—" }
             binding.tvPreview.text = "—"
             binding.root.setOnClickListener { onClick(entity) }
+            binding.root.setOnLongClickListener { onLongClick(entity); true }
         }
     }
 

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -30,12 +31,22 @@ class OneOnOneFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = OneOnOneAdapter { item ->
-            findNavController().navigate(
-                R.id.action_one_on_one_to_detail,
-                bundleOf("session_id" to item.session.id)
-            )
-        }
+        val adapter = OneOnOneAdapter(
+            onClick = { item ->
+                findNavController().navigate(
+                    R.id.action_one_on_one_to_detail,
+                    bundleOf("session_id" to item.session.id)
+                )
+            },
+            onLongClick = { item ->
+                AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.dialog_delete_title)
+                    .setMessage(R.string.dialog_delete_message)
+                    .setPositiveButton(R.string.action_delete) { _, _ -> viewModel.delete(item.session) }
+                    .setNegativeButton(R.string.action_cancel, null)
+                    .show()
+            }
+        )
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
 

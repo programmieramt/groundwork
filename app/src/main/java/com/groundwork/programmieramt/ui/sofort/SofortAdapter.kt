@@ -10,7 +10,8 @@ import com.groundwork.programmieramt.db.entity.SofortNoteEntity
 import com.groundwork.programmieramt.util.toGermanDate
 
 class SofortAdapter(
-    private val onClick: (SofortNoteEntity) -> Unit
+    private val onClick: (SofortNoteEntity) -> Unit,
+    private val onLongClick: (SofortNoteEntity) -> Unit
 ) : ListAdapter<SofortNoteEntity, SofortAdapter.ViewHolder>(DIFF) {
 
     inner class ViewHolder(private val binding: ItemSofortNoteBinding) :
@@ -21,6 +22,7 @@ class SofortAdapter(
             binding.tvKategorie.text = entity.kategorie
             binding.tvCapturePreview.text = "—"
             binding.root.setOnClickListener { onClick(entity) }
+            binding.root.setOnLongClickListener { onLongClick(entity); true }
         }
     }
 

@@ -103,6 +103,27 @@ class WebDavClient @Inject constructor(
         }
     }
 
+    fun delete(path: String): Result<Unit> {
+        val config = configStore.get() ?: return Result.failure(Exception("Keine WebDAV-Konfiguration"))
+        return try {
+            val client = buildClient(config)
+            val url = config.url.trimEnd('/') + "/" + path.trimStart('/')
+            val req = Request.Builder()
+                .url(url)
+                .delete()
+                .header("Authorization", credential(config))
+                .build()
+            val resp = client.newCall(req).execute()
+            resp.close()
+            // 404 = already gone — treat as success
+            if (resp.isSuccessful || resp.code == 404) Result.success(Unit)
+            else Result.failure(Exception("DELETE HTTP ${resp.code}"))
+        } catch (e: Exception) {
+            Timber.e(e, "WebDAV DELETE failed: $path")
+            Result.failure(e)
+        }
+    }
+
     fun get(path: String): Result<String> {
         val config = configStore.get() ?: return Result.failure(Exception("Keine WebDAV-Konfiguration"))
         return try {

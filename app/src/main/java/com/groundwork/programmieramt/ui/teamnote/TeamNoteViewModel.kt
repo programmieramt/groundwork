@@ -27,5 +27,8 @@ class TeamNoteViewModel @Inject constructor(
         syncManager.uploadTeamNote(if (entity.id == 0L) entity.copy(id = id) else entity)
     }
 
-    fun delete(entity: TeamNoteEntity) = viewModelScope.launch { dao.delete(entity) }
+    fun delete(entity: TeamNoteEntity) = viewModelScope.launch {
+        dao.delete(entity)
+        syncManager.deleteTeamNote(entity.id)
+    }
 }

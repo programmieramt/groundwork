@@ -75,6 +75,9 @@
 
     <string name="action_save">Speichern</string>
     <string name="action_delete">Löschen</string>
+    <string name="action_cancel">Abbrechen</string>
+    <string name="dialog_delete_title">Eintrag löschen?</string>
+    <string name="dialog_delete_message">Dieser Eintrag wird dauerhaft gelöscht.</string>
 
     <!-- Settings / WebDAV -->
     <string name="settings_webdav_url">WebDAV URL</string>

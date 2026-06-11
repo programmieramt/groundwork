@@ -45,5 +45,8 @@ class OneOnOneViewModel @Inject constructor(
         syncManager.uploadSession(if (entity.id == 0L) entity.copy(id = id) else entity)
     }
 
-    fun delete(entity: OneOnOneSessionEntity) = viewModelScope.launch { sessionDao.delete(entity) }
+    fun delete(entity: OneOnOneSessionEntity) = viewModelScope.launch {
+        sessionDao.delete(entity)
+        syncManager.deleteSession(entity.id)
+    }
 }

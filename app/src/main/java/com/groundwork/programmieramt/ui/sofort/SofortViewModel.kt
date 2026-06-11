@@ -27,5 +27,8 @@ class SofortViewModel @Inject constructor(
         syncManager.uploadSofortNote(if (entity.id == 0L) entity.copy(id = id) else entity)
     }
 
-    fun delete(entity: SofortNoteEntity) = viewModelScope.launch { dao.delete(entity) }
+    fun delete(entity: SofortNoteEntity) = viewModelScope.launch {
+        dao.delete(entity)
+        syncManager.deleteSofortNote(entity.id)
+    }
 }

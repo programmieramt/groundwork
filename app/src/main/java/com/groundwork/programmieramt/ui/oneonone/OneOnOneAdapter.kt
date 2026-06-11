@@ -9,7 +9,8 @@ import com.groundwork.programmieramt.databinding.ItemOneOnOneBinding
 import com.groundwork.programmieramt.util.toGermanDate
 
 class OneOnOneAdapter(
-    private val onClick: (SessionWithMember) -> Unit
+    private val onClick: (SessionWithMember) -> Unit,
+    private val onLongClick: (SessionWithMember) -> Unit
 ) : ListAdapter<SessionWithMember, OneOnOneAdapter.ViewHolder>(DIFF) {
 
     inner class ViewHolder(private val binding: ItemOneOnOneBinding) :
@@ -21,6 +22,7 @@ class OneOnOneAdapter(
             binding.tvSessionNr.text = "Nr. ${item.session.sessionNumber}"
             binding.tvThemaPreview.text = "—"
             binding.root.setOnClickListener { onClick(item) }
+            binding.root.setOnLongClickListener { onLongClick(item); true }
         }
     }
 
