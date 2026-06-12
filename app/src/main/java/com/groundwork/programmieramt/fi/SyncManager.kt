@@ -100,12 +100,17 @@ class SyncManager @Inject constructor(
             .onFailure { Timber.e(it, "deleteSofortNote failed") }
     }
 
-    // Pull all data from server; "newest wins" by updatedAt.
-    // Team members are pulled first since sessions reference them by FK.
+    // Push all local data, then pull from server with "newest wins" by updatedAt.
+    // Team members are pushed/pulled first since sessions reference them by FK.
     suspend fun syncAll(): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             ensureDirs().getOrThrow()
             dirsEnsured = true
+
+            teamMemberDao.getAllOnce().forEach { client.put("groundwork/team_members/${it.id}.json", teamMemberAdapter.toJson(it)) }
+            oneOnOneDao.getAllOnce().forEach { client.put("groundwork/sessions/${it.id}.json", sessionAdapter.toJson(it)) }
+            teamNoteDao.getAllOnce().forEach { client.put("groundwork/team_notes/${it.id}.json", teamNoteAdapter.toJson(it)) }
+            sofortDao.getAllOnce().forEach { client.put("groundwork/sofort_notes/${it.id}.json", sofortAdapter.toJson(it)) }
 
             pullCollection("groundwork/team_members") { json ->
                 teamMemberAdapter.fromJson(json)?.let { remote ->
