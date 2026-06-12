@@ -31,4 +31,9 @@ class TeamViewModel @Inject constructor(
         dao.delete(entity)
         syncManager.deleteTeamMember(entity.id)
     }
+
+    fun syncAll(onDone: () -> Unit) = viewModelScope.launch {
+        syncManager.syncAll()
+        onDone()
+    }
 }

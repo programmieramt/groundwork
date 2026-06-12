@@ -49,4 +49,9 @@ class OneOnOneViewModel @Inject constructor(
         sessionDao.delete(entity)
         syncManager.deleteSession(entity.id)
     }
+
+    fun syncAll(onDone: () -> Unit) = viewModelScope.launch {
+        syncManager.syncAll()
+        onDone()
+    }
 }

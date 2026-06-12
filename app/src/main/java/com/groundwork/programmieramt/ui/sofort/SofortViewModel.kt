@@ -31,4 +31,9 @@ class SofortViewModel @Inject constructor(
         dao.delete(entity)
         syncManager.deleteSofortNote(entity.id)
     }
+
+    fun syncAll(onDone: () -> Unit) = viewModelScope.launch {
+        syncManager.syncAll()
+        onDone()
+    }
 }

@@ -50,6 +50,10 @@ class TeamFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
 
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.syncAll { binding.swipeRefresh.isRefreshing = false }
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.members.collect { adapter.submitList(it) }
         }
