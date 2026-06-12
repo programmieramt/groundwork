@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.groundwork.programmieramt.R
 import com.groundwork.programmieramt.databinding.FragmentSettingsBinding
 import com.groundwork.programmieramt.fi.SyncManager
+import com.groundwork.programmieramt.fi.UltrabridgeConfigStore
 import com.groundwork.programmieramt.fi.WebDavConfig
 import com.groundwork.programmieramt.fi.WebDavClient
 import com.groundwork.programmieramt.fi.WebDavConfigStore
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class SettingsFragment : Fragment() {
 
     @Inject lateinit var configStore: WebDavConfigStore
+    @Inject lateinit var ultrabridgeConfigStore: UltrabridgeConfigStore
     @Inject lateinit var client: WebDavClient
     @Inject lateinit var syncManager: SyncManager
 
@@ -44,9 +46,17 @@ class SettingsFragment : Fragment() {
             binding.cbTrustAll.isChecked = config.trustAllCerts
         }
 
+        ultrabridgeConfigStore.get()?.let { config ->
+            binding.etUbUrl.setText(config.url)
+            binding.etUbUsername.setText(config.username)
+            binding.etUbPassword.setText(config.password)
+            binding.cbUbTrustAll.isChecked = config.trustAllCerts
+        }
+
         binding.btnSave.setOnClickListener { saveConfig() }
         binding.btnTest.setOnClickListener { testConnection() }
         binding.btnSyncNow.setOnClickListener { syncNow() }
+        binding.btnUbSave.setOnClickListener { saveUltrabridgeConfig() }
     }
 
     private fun currentConfig() = WebDavConfig(
@@ -65,6 +75,17 @@ class SettingsFragment : Fragment() {
         configStore.save(config)
         Toast.makeText(requireContext(), R.string.settings_saved, Toast.LENGTH_SHORT).show()
         binding.tvStatus.text = getString(R.string.settings_saved)
+    }
+
+    private fun saveUltrabridgeConfig() {
+        val config = WebDavConfig(
+            url = binding.etUbUrl.text?.toString()?.trim() ?: "",
+            username = binding.etUbUsername.text?.toString()?.trim() ?: "",
+            password = binding.etUbPassword.text?.toString() ?: "",
+            trustAllCerts = binding.cbUbTrustAll.isChecked
+        )
+        ultrabridgeConfigStore.save(config)
+        Toast.makeText(requireContext(), R.string.settings_saved, Toast.LENGTH_SHORT).show()
     }
 
     private fun testConnection() {

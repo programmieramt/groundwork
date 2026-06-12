@@ -88,4 +88,5 @@
     <string name="settings_sync_now">Jetzt synchronisieren</string>
     <string name="settings_saved">Einstellungen gespeichert</string>
     <string name="settings_title">Einstellungen</string>
+    <string name="settings_ultrabridge_title">Ultrabridge Export</string>
 </resources>

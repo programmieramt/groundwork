@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.groundwork.programmieramt.db.dao.TeamNoteDao
 import com.groundwork.programmieramt.db.entity.TeamNoteEntity
 import com.groundwork.programmieramt.fi.SyncManager
+import com.groundwork.programmieramt.fi.UltrabridgeExporter
+import com.groundwork.programmieramt.pen.FormTemplate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -14,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TeamNoteViewModel @Inject constructor(
     private val dao: TeamNoteDao,
-    private val syncManager: SyncManager
+    private val syncManager: SyncManager,
+    private val ultrabridgeExporter: UltrabridgeExporter
 ) : ViewModel() {
 
     val notes = dao.getAll()
@@ -24,7 +27,9 @@ class TeamNoteViewModel @Inject constructor(
 
     fun save(entity: TeamNoteEntity) = viewModelScope.launch {
         val id = dao.insert(entity)
-        syncManager.uploadTeamNote(if (entity.id == 0L) entity.copy(id = id) else entity)
+        val saved = if (entity.id == 0L) entity.copy(id = id) else entity
+        syncManager.uploadTeamNote(saved)
+        ultrabridgeExporter.export("team_notes", saved.id, saved.strokes) { canvas, w, h -> FormTemplate.drawTeamNote(canvas, w, h) }
     }
 
     fun delete(entity: TeamNoteEntity) = viewModelScope.launch {

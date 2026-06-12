@@ -62,15 +62,15 @@ class WebDavClient @Inject constructor(
         }
     }
 
-    fun ensureDirectory(path: String): Result<Unit> {
-        val config = configStore.get() ?: return Result.failure(Exception("Keine WebDAV-Konfiguration"))
+    fun ensureDirectory(path: String, config: WebDavConfig? = null): Result<Unit> {
+        val cfg = config ?: configStore.get() ?: return Result.failure(Exception("Keine WebDAV-Konfiguration"))
         return try {
-            val client = buildClient(config)
-            val url = config.url.trimEnd('/') + "/" + path.trimStart('/')
+            val client = buildClient(cfg)
+            val url = cfg.url.trimEnd('/') + "/" + path.trimStart('/')
             val req = Request.Builder()
                 .url(url)
                 .method("MKCOL", "".toRequestBody())
-                .header("Authorization", credential(config))
+                .header("Authorization", credential(cfg))
                 .build()
             val resp = client.newCall(req).execute()
             resp.close()
@@ -92,6 +92,26 @@ class WebDavClient @Inject constructor(
                 .url(url)
                 .put(json.toRequestBody(jsonMedia))
                 .header("Authorization", credential(config))
+                .build()
+            val resp = client.newCall(req).execute()
+            resp.close()
+            if (resp.isSuccessful) Result.success(Unit)
+            else Result.failure(Exception("PUT HTTP ${resp.code}"))
+        } catch (e: Exception) {
+            Timber.e(e, "WebDAV PUT failed: $path")
+            Result.failure(e)
+        }
+    }
+
+    fun putBytes(path: String, bytes: ByteArray, mediaType: String, config: WebDavConfig? = null): Result<Unit> {
+        val cfg = config ?: configStore.get() ?: return Result.failure(Exception("Keine WebDAV-Konfiguration"))
+        return try {
+            val client = buildClient(cfg)
+            val url = cfg.url.trimEnd('/') + "/" + path.trimStart('/')
+            val req = Request.Builder()
+                .url(url)
+                .put(bytes.toRequestBody(mediaType.toMediaType()))
+                .header("Authorization", credential(cfg))
                 .build()
             val resp = client.newCall(req).execute()
             resp.close()

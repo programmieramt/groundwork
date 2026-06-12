@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.groundwork.programmieramt.db.dao.SofortNoteDao
 import com.groundwork.programmieramt.db.entity.SofortNoteEntity
 import com.groundwork.programmieramt.fi.SyncManager
+import com.groundwork.programmieramt.fi.UltrabridgeExporter
+import com.groundwork.programmieramt.pen.FormTemplate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -14,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SofortViewModel @Inject constructor(
     private val dao: SofortNoteDao,
-    private val syncManager: SyncManager
+    private val syncManager: SyncManager,
+    private val ultrabridgeExporter: UltrabridgeExporter
 ) : ViewModel() {
 
     val notes = dao.getAll()
@@ -24,7 +27,9 @@ class SofortViewModel @Inject constructor(
 
     fun save(entity: SofortNoteEntity) = viewModelScope.launch {
         val id = dao.insert(entity)
-        syncManager.uploadSofortNote(if (entity.id == 0L) entity.copy(id = id) else entity)
+        val saved = if (entity.id == 0L) entity.copy(id = id) else entity
+        syncManager.uploadSofortNote(saved)
+        ultrabridgeExporter.export("sofort_notes", saved.id, saved.strokes) { canvas, w, h -> FormTemplate.drawSofort(canvas, w, h) }
     }
 
     fun delete(entity: SofortNoteEntity) = viewModelScope.launch {

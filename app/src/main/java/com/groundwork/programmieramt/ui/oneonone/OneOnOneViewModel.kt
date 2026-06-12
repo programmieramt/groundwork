@@ -7,6 +7,8 @@ import com.groundwork.programmieramt.db.dao.TeamMemberDao
 import com.groundwork.programmieramt.db.entity.OneOnOneSessionEntity
 import com.groundwork.programmieramt.db.entity.TeamMemberEntity
 import com.groundwork.programmieramt.fi.SyncManager
+import com.groundwork.programmieramt.fi.UltrabridgeExporter
+import com.groundwork.programmieramt.pen.FormTemplate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -23,7 +25,8 @@ data class SessionWithMember(
 class OneOnOneViewModel @Inject constructor(
     private val sessionDao: OneOnOneSessionDao,
     private val memberDao: TeamMemberDao,
-    private val syncManager: SyncManager
+    private val syncManager: SyncManager,
+    private val ultrabridgeExporter: UltrabridgeExporter
 ) : ViewModel() {
 
     val sessions = combine(sessionDao.getAll(), memberDao.getAll()) { sessions, members ->
@@ -42,7 +45,9 @@ class OneOnOneViewModel @Inject constructor(
 
     fun save(entity: OneOnOneSessionEntity) = viewModelScope.launch {
         val id = sessionDao.insert(entity)
-        syncManager.uploadSession(if (entity.id == 0L) entity.copy(id = id) else entity)
+        val saved = if (entity.id == 0L) entity.copy(id = id) else entity
+        syncManager.uploadSession(saved)
+        ultrabridgeExporter.export("sessions", saved.id, saved.strokes) { canvas, w, h -> FormTemplate.drawOneOnOne(canvas, w, h) }
     }
 
     fun delete(entity: OneOnOneSessionEntity) = viewModelScope.launch {
