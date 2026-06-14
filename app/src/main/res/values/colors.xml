@@ -10,5 +10,7 @@
     <color name="template_team_allgemein">#E65100</color>
     <color name="template_teammitglied">#388E3C</color>
     <color name="template_oneonone">#4A148C</color>
+    <color name="template_notiz">#607D8B</color>
+    <color name="template_meeting">#00897B</color>
     <color name="section_divider">#BDBDBD</color>
 </resources>

@@ -60,6 +60,23 @@ object FormTemplate {
         ))
     }
 
+    fun drawMeetingNote(canvas: Canvas, w: Int, h: Int) {
+        drawEqualSections(canvas, w, h, Color.parseColor("#00897B"), listOf(
+            "Agenda",
+            "Notizen",
+            "Action Items"
+        ))
+    }
+
+    fun drawFreeNote(canvas: Canvas, w: Int, h: Int) {
+        val lineSpacing = (h * 0.048f).coerceIn(36f, 64f)
+        var lineY = lineSpacing
+        while (lineY < h) {
+            canvas.drawLine(0f, lineY, w.toFloat(), lineY, linePaint)
+            lineY += lineSpacing
+        }
+    }
+
     private fun drawEqualSections(canvas: Canvas, w: Int, h: Int, color: Int, labels: List<String>) {
         val n = labels.size
         drawSections(canvas, w, h, color,

@@ -3,6 +3,8 @@ package com.groundwork.programmieramt.di
 import android.content.Context
 import androidx.room.Room
 import com.groundwork.programmieramt.db.GroundworkDatabase
+import com.groundwork.programmieramt.db.dao.FreeNoteDao
+import com.groundwork.programmieramt.db.dao.MeetingNoteDao
 import com.groundwork.programmieramt.db.dao.OneOnOneSessionDao
 import com.groundwork.programmieramt.db.dao.SofortNoteDao
 import com.groundwork.programmieramt.db.dao.TeamMemberDao
@@ -29,4 +31,6 @@ object DatabaseModule {
     @Provides fun provideOneOnOneSessionDao(db: GroundworkDatabase): OneOnOneSessionDao = db.oneOnOneSessionDao()
     @Provides fun provideTeamNoteDao(db: GroundworkDatabase): TeamNoteDao = db.teamNoteDao()
     @Provides fun provideSofortNoteDao(db: GroundworkDatabase): SofortNoteDao = db.sofortNoteDao()
+    @Provides fun provideFreeNoteDao(db: GroundworkDatabase): FreeNoteDao = db.freeNoteDao()
+    @Provides fun provideMeetingNoteDao(db: GroundworkDatabase): MeetingNoteDao = db.meetingNoteDao()
 }

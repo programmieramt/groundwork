@@ -6,6 +6,8 @@
     <string name="nav_team">Team</string>
     <string name="nav_one_on_one">1:1</string>
     <string name="nav_team_note">Beobachtungen</string>
+    <string name="nav_notiz">Notizen</string>
+    <string name="nav_meeting">Meeting</string>
 
     <string name="drive_connected">Drive verbunden</string>
     <string name="drive_disconnected">Drive trennen</string>
@@ -32,6 +34,8 @@
     <string name="label_sofort_detail">Sofort</string>
     <string name="label_one_on_one_detail">1:1 Notizen</string>
     <string name="label_team_note_detail">Beobachtung</string>
+    <string name="label_free_note_detail">Notiz</string>
+    <string name="label_meeting_detail">Meeting</string>
 
     <!-- 1:1 fields -->
     <string name="field_datum">Datum</string>
@@ -69,6 +73,14 @@
     <!-- Sofort section headers -->
     <string name="section_capture">CAPTURE</string>
     <string name="section_followup">FOLLOW-UP / ACTION</string>
+
+    <!-- Meeting note fields -->
+    <string name="field_teilnehmer">Teilnehmer</string>
+
+    <!-- Meeting note section headers -->
+    <string name="section_agenda">AGENDA</string>
+    <string name="section_notizen">NOTIZEN</string>
+    <string name="section_action_items">ACTION ITEMS</string>
 
     <!-- Validation -->
     <string name="error_member_required">Bitte Teammitglied auswählen</string>

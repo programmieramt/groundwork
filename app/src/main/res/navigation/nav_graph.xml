@@ -68,6 +68,38 @@
         <argument android:name="note_id" app:argType="long" android:defaultValue="0L" />
     </fragment>
 
+    <!-- NOTIZEN -->
+    <fragment
+        android:id="@+id/nav_free_note"
+        android:name="com.groundwork.programmieramt.ui.freenote.FreeNoteFragment"
+        android:label="@string/nav_notiz">
+        <action
+            android:id="@+id/action_free_note_to_detail"
+            app:destination="@id/nav_free_note_detail" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_free_note_detail"
+        android:name="com.groundwork.programmieramt.ui.freenote.FreeNoteDetailFragment"
+        android:label="@string/label_free_note_detail">
+        <argument android:name="note_id" app:argType="long" android:defaultValue="0L" />
+    </fragment>
+
+    <!-- MEETING -->
+    <fragment
+        android:id="@+id/nav_meeting"
+        android:name="com.groundwork.programmieramt.ui.meeting.MeetingNoteFragment"
+        android:label="@string/nav_meeting">
+        <action
+            android:id="@+id/action_meeting_to_detail"
+            app:destination="@id/nav_meeting_detail" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_meeting_detail"
+        android:name="com.groundwork.programmieramt.ui.meeting.MeetingNoteDetailFragment"
+        android:label="@string/label_meeting_detail">
+        <argument android:name="note_id" app:argType="long" android:defaultValue="0L" />
+    </fragment>
+
     <!-- SETTINGS -->
     <fragment
         android:id="@+id/nav_settings"

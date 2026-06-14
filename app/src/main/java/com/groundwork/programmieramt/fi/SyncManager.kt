@@ -1,9 +1,13 @@
 package com.groundwork.programmieramt.fi
 
+import com.groundwork.programmieramt.db.dao.FreeNoteDao
+import com.groundwork.programmieramt.db.dao.MeetingNoteDao
 import com.groundwork.programmieramt.db.dao.OneOnOneSessionDao
 import com.groundwork.programmieramt.db.dao.SofortNoteDao
 import com.groundwork.programmieramt.db.dao.TeamMemberDao
 import com.groundwork.programmieramt.db.dao.TeamNoteDao
+import com.groundwork.programmieramt.db.entity.FreeNoteEntity
+import com.groundwork.programmieramt.db.entity.MeetingNoteEntity
 import com.groundwork.programmieramt.db.entity.OneOnOneSessionEntity
 import com.groundwork.programmieramt.db.entity.SofortNoteEntity
 import com.groundwork.programmieramt.db.entity.TeamMemberEntity
@@ -22,12 +26,16 @@ class SyncManager @Inject constructor(
     private val teamMemberDao: TeamMemberDao,
     private val oneOnOneDao: OneOnOneSessionDao,
     private val teamNoteDao: TeamNoteDao,
-    private val sofortDao: SofortNoteDao
+    private val sofortDao: SofortNoteDao,
+    private val freeNoteDao: FreeNoteDao,
+    private val meetingNoteDao: MeetingNoteDao
 ) {
     private val teamMemberAdapter = moshi.adapter(TeamMemberEntity::class.java)
     private val sessionAdapter = moshi.adapter(OneOnOneSessionEntity::class.java)
     private val teamNoteAdapter = moshi.adapter(TeamNoteEntity::class.java)
     private val sofortAdapter = moshi.adapter(SofortNoteEntity::class.java)
+    private val freeNoteAdapter = moshi.adapter(FreeNoteEntity::class.java)
+    private val meetingNoteAdapter = moshi.adapter(MeetingNoteEntity::class.java)
 
     @Volatile private var dirsEnsured = false
 
@@ -37,6 +45,8 @@ class SyncManager @Inject constructor(
             .flatMap { client.ensureDirectory("groundwork/sessions") }
             .flatMap { client.ensureDirectory("groundwork/team_notes") }
             .flatMap { client.ensureDirectory("groundwork/sofort_notes") }
+            .flatMap { client.ensureDirectory("groundwork/free_notes") }
+            .flatMap { client.ensureDirectory("groundwork/meeting_notes") }
 
     private fun ensureDirsOnce() {
         if (!dirsEnsured) {
@@ -80,6 +90,24 @@ class SyncManager @Inject constructor(
         }
     }
 
+    suspend fun uploadFreeNote(entity: FreeNoteEntity) = withContext(Dispatchers.IO) {
+        try {
+            ensureDirsOnce()
+            client.put("groundwork/free_notes/${entity.id}.json", freeNoteAdapter.toJson(entity))
+        } catch (e: Exception) {
+            Timber.e(e, "uploadFreeNote failed")
+        }
+    }
+
+    suspend fun uploadMeetingNote(entity: MeetingNoteEntity) = withContext(Dispatchers.IO) {
+        try {
+            ensureDirsOnce()
+            client.put("groundwork/meeting_notes/${entity.id}.json", meetingNoteAdapter.toJson(entity))
+        } catch (e: Exception) {
+            Timber.e(e, "uploadMeetingNote failed")
+        }
+    }
+
     suspend fun deleteTeamMember(id: Long) = withContext(Dispatchers.IO) {
         client.delete("groundwork/team_members/$id.json")
             .onFailure { Timber.e(it, "deleteTeamMember failed") }
@@ -100,6 +128,16 @@ class SyncManager @Inject constructor(
             .onFailure { Timber.e(it, "deleteSofortNote failed") }
     }
 
+    suspend fun deleteFreeNote(id: Long) = withContext(Dispatchers.IO) {
+        client.delete("groundwork/free_notes/$id.json")
+            .onFailure { Timber.e(it, "deleteFreeNote failed") }
+    }
+
+    suspend fun deleteMeetingNote(id: Long) = withContext(Dispatchers.IO) {
+        client.delete("groundwork/meeting_notes/$id.json")
+            .onFailure { Timber.e(it, "deleteMeetingNote failed") }
+    }
+
     // Push all local data, then pull from server with "newest wins" by updatedAt.
     // Team members are pushed/pulled first since sessions reference them by FK.
     suspend fun syncAll(): Result<Unit> = withContext(Dispatchers.IO) {
@@ -111,6 +149,8 @@ class SyncManager @Inject constructor(
             oneOnOneDao.getAllOnce().forEach { client.put("groundwork/sessions/${it.id}.json", sessionAdapter.toJson(it)) }
             teamNoteDao.getAllOnce().forEach { client.put("groundwork/team_notes/${it.id}.json", teamNoteAdapter.toJson(it)) }
             sofortDao.getAllOnce().forEach { client.put("groundwork/sofort_notes/${it.id}.json", sofortAdapter.toJson(it)) }
+            freeNoteDao.getAllOnce().forEach { client.put("groundwork/free_notes/${it.id}.json", freeNoteAdapter.toJson(it)) }
+            meetingNoteDao.getAllOnce().forEach { client.put("groundwork/meeting_notes/${it.id}.json", meetingNoteAdapter.toJson(it)) }
 
             pullCollection("groundwork/team_members") { json ->
                 teamMemberAdapter.fromJson(json)?.let { remote ->
@@ -141,6 +181,22 @@ class SyncManager @Inject constructor(
                     val local = sofortDao.getById(remote.id)
                     if (local == null || remote.updatedAt > local.updatedAt) {
                         sofortDao.insert(remote)
+                    }
+                }
+            }
+            pullCollection("groundwork/free_notes") { json ->
+                freeNoteAdapter.fromJson(json)?.let { remote ->
+                    val local = freeNoteDao.getById(remote.id)
+                    if (local == null || remote.updatedAt > local.updatedAt) {
+                        freeNoteDao.insert(remote)
+                    }
+                }
+            }
+            pullCollection("groundwork/meeting_notes") { json ->
+                meetingNoteAdapter.fromJson(json)?.let { remote ->
+                    val local = meetingNoteDao.getById(remote.id)
+                    if (local == null || remote.updatedAt > local.updatedAt) {
+                        meetingNoteDao.insert(remote)
                     }
                 }
             }

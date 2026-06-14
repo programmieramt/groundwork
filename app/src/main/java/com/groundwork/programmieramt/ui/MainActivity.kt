@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setupWithNavController(navController)
 
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.nav_sofort, R.id.nav_team, R.id.nav_one_on_one, R.id.nav_team_note)
+            setOf(R.id.nav_sofort, R.id.nav_team, R.id.nav_one_on_one, R.id.nav_team_note, R.id.nav_meeting, R.id.nav_free_note)
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
     }

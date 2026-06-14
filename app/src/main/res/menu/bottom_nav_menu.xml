@@ -21,4 +21,14 @@
         android:icon="@drawable/ic_nav_teamnote"
         android:title="@string/nav_team_note" />
 
+    <item
+        android:id="@+id/nav_meeting"
+        android:icon="@drawable/ic_nav_meeting"
+        android:title="@string/nav_meeting" />
+
+    <item
+        android:id="@+id/nav_free_note"
+        android:icon="@drawable/ic_nav_notiz"
+        android:title="@string/nav_notiz" />
+
 </menu>
