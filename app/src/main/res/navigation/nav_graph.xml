@@ -68,6 +68,19 @@
         <argument android:name="note_id" app:argType="long" android:defaultValue="0L" />
     </fragment>
 
+    <!-- MEHR -->
+    <fragment
+        android:id="@+id/nav_more"
+        android:name="com.groundwork.programmieramt.ui.more.MoreFragment"
+        android:label="@string/nav_more">
+        <action
+            android:id="@+id/action_more_to_free_note"
+            app:destination="@id/nav_free_note" />
+        <action
+            android:id="@+id/action_more_to_meeting"
+            app:destination="@id/nav_meeting" />
+    </fragment>
+
     <!-- NOTIZEN -->
     <fragment
         android:id="@+id/nav_free_note"
