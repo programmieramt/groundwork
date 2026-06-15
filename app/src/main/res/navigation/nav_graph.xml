@@ -79,6 +79,31 @@
         <action
             android:id="@+id/action_more_to_meeting"
             app:destination="@id/nav_meeting" />
+        <action
+            android:id="@+id/action_more_to_today"
+            app:destination="@id/nav_today" />
+    </fragment>
+
+    <!-- HEUTE -->
+    <fragment
+        android:id="@+id/nav_today"
+        android:name="com.groundwork.programmieramt.ui.today.TodayFragment"
+        android:label="@string/nav_today">
+        <action
+            android:id="@+id/action_today_to_sofort_detail"
+            app:destination="@id/nav_sofort_detail" />
+        <action
+            android:id="@+id/action_today_to_team_note_detail"
+            app:destination="@id/nav_team_note_detail" />
+        <action
+            android:id="@+id/action_today_to_one_on_one_detail"
+            app:destination="@id/nav_one_on_one_detail" />
+        <action
+            android:id="@+id/action_today_to_meeting_detail"
+            app:destination="@id/nav_meeting_detail" />
+        <action
+            android:id="@+id/action_today_to_free_note_detail"
+            app:destination="@id/nav_free_note_detail" />
     </fragment>
 
     <!-- NOTIZEN -->

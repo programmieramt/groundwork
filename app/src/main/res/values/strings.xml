@@ -9,6 +9,8 @@
     <string name="nav_notiz">Notizen</string>
     <string name="nav_meeting">Meeting</string>
     <string name="nav_more">Mehr</string>
+    <string name="nav_today">Heute</string>
+    <string name="label_today_empty">Heute noch keine Einträge</string>
 
     <string name="drive_connected">Drive verbunden</string>
     <string name="drive_disconnected">Drive trennen</string>

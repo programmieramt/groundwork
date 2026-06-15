@@ -24,6 +24,9 @@ class MoreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.btnToday.setOnClickListener {
+            findNavController().navigate(R.id.action_more_to_today)
+        }
         binding.btnNotizen.setOnClickListener {
             findNavController().navigate(R.id.action_more_to_free_note)
         }
