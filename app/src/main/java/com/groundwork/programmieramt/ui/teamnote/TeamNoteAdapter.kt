@@ -18,9 +18,9 @@ class TeamNoteAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(entity: TeamNoteEntity) {
+            binding.tvTitel.text = entity.titel.ifBlank { "—" }
             binding.tvDatum.text = entity.datum.toGermanDate()
             binding.tvKontext.text = entity.kontextMeeting.ifBlank { "—" }
-            binding.tvPreview.text = "—"
             binding.root.setOnClickListener { onClick(entity) }
             binding.root.setOnLongClickListener { onLongClick(entity); true }
         }

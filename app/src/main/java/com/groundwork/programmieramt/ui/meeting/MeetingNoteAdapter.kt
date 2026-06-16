@@ -18,6 +18,7 @@ class MeetingNoteAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(entity: MeetingNoteEntity) {
+            binding.tvTitel.text = entity.titel.ifBlank { "—" }
             binding.tvDatum.text = entity.datum.toGermanDate()
             binding.tvTeilnehmer.text = entity.teilnehmer.ifBlank { "—" }
             binding.root.setOnClickListener { onClick(entity) }

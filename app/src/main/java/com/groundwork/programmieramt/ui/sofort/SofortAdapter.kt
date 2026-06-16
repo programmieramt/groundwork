@@ -18,9 +18,9 @@ class SofortAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(entity: SofortNoteEntity) {
+            binding.tvTitel.text = entity.titel.ifBlank { entity.kategorie.ifBlank { "—" } }
             binding.tvDatum.text = entity.datum.toGermanDate()
             binding.tvKategorie.text = entity.kategorie
-            binding.tvCapturePreview.text = "—"
             binding.root.setOnClickListener { onClick(entity) }
             binding.root.setOnLongClickListener { onLongClick(entity); true }
         }

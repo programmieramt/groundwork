@@ -33,16 +33,16 @@ class TodayViewModel @Inject constructor(
     ) { sofort, teamNotes, meetings, freeNotes ->
         val entries = mutableListOf<TodayEntry>()
         sofort.filter { it.datum.isToday() }.forEach {
-            entries.add(TodayEntry(TodayEntryType.SOFORT, it.id, it.datum, it.kategorie.ifBlank { "Sofort" }))
+            entries.add(TodayEntry(TodayEntryType.SOFORT, it.id, it.datum, it.titel.ifBlank { it.kategorie.ifBlank { "—" } }))
         }
         teamNotes.filter { it.datum.isToday() }.forEach {
-            entries.add(TodayEntry(TodayEntryType.TEAM_NOTE, it.id, it.datum, it.kontextMeeting.ifBlank { "Beobachtung" }))
+            entries.add(TodayEntry(TodayEntryType.TEAM_NOTE, it.id, it.datum, it.titel.ifBlank { it.kontextMeeting.ifBlank { "—" } }))
         }
         meetings.filter { it.datum.isToday() }.forEach {
-            entries.add(TodayEntry(TodayEntryType.MEETING, it.id, it.datum, it.teilnehmer.ifBlank { "Meeting" }))
+            entries.add(TodayEntry(TodayEntryType.MEETING, it.id, it.datum, it.titel.ifBlank { it.teilnehmer.ifBlank { "—" } }))
         }
         freeNotes.filter { it.datum.isToday() }.forEach {
-            entries.add(TodayEntry(TodayEntryType.FREE_NOTE, it.id, it.datum, "Notiz"))
+            entries.add(TodayEntry(TodayEntryType.FREE_NOTE, it.id, it.datum, it.titel.ifBlank { "—" }))
         }
         entries
     }
@@ -50,7 +50,9 @@ class TodayViewModel @Inject constructor(
     private val sessionEntries = combine(sessionDao.getAll(), memberDao.getAll()) { sessions, members ->
         val nameMap = members.associateBy({ it.id }, { it.name })
         sessions.filter { it.datum.isToday() }.map {
-            TodayEntry(TodayEntryType.ONE_ON_ONE, it.id, it.datum, "1:1 mit ${nameMap[it.teamMemberId] ?: "?"}")
+            val name = nameMap[it.teamMemberId] ?: "?"
+            val context = if (it.titel.isNotBlank()) "$name – ${it.titel}" else name
+            TodayEntry(TodayEntryType.ONE_ON_ONE, it.id, it.datum, context)
         }
     }
 

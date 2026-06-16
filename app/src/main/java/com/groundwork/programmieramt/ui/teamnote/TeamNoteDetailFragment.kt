@@ -62,6 +62,7 @@ class TeamNoteDetailFragment : Fragment() {
             existingId = note.id
             datumMs = note.datum
             binding.etDatum.setText(datumMs.toGermanDate())
+            binding.etTitel.setText(note.titel)
             binding.etKontext.setText(note.kontextMeeting)
             binding.drawingSurface.setStrokesJson(note.strokes)
         }
@@ -80,6 +81,7 @@ class TeamNoteDetailFragment : Fragment() {
         viewModel.save(TeamNoteEntity(
             id = existingId,
             datum = datumMs,
+            titel = binding.etTitel.text?.toString()?.trim() ?: "",
             kontextMeeting = binding.etKontext.text?.toString()?.trim() ?: "",
             strokes = binding.drawingSurface.getStrokesJson(),
             updatedAt = System.currentTimeMillis()

@@ -24,7 +24,7 @@ import com.groundwork.programmieramt.db.entity.TeamNoteEntity
         FreeNoteEntity::class,
         MeetingNoteEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class GroundworkDatabase : RoomDatabase() {

@@ -18,6 +18,7 @@ class FreeNoteAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(entity: FreeNoteEntity) {
+            binding.tvTitel.text = entity.titel.ifBlank { "—" }
             binding.tvDatum.text = entity.datum.toGermanDate()
             binding.root.setOnClickListener { onClick(entity) }
             binding.root.setOnLongClickListener { onLongClick(entity); true }

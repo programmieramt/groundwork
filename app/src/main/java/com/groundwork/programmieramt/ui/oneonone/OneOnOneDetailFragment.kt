@@ -80,6 +80,7 @@ class OneOnOneDetailFragment : Fragment() {
             existingId = session.id
             datumMs = session.datum
             binding.etDatum.setText(datumMs.toGermanDate())
+            binding.etTitel.setText(session.titel)
             binding.drawingSurface.setStrokesJson(session.strokes)
             viewModel.members.value.find { it.id == session.teamMemberId }?.let {
                 selectedMember = it
@@ -120,6 +121,7 @@ class OneOnOneDetailFragment : Fragment() {
                 id = existingId,
                 teamMemberId = member.id,
                 datum = datumMs,
+                titel = binding.etTitel.text?.toString()?.trim() ?: "",
                 sessionNumber = sessionNr,
                 strokes = binding.drawingSurface.getStrokesJson(),
                 updatedAt = System.currentTimeMillis()

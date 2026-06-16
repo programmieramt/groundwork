@@ -9,6 +9,7 @@ import com.squareup.moshi.JsonClass
 data class SofortNoteEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val datum: Long = System.currentTimeMillis(),
+    val titel: String = "",
     val kategorie: String = "",
     val strokes: String = "",
     val updatedAt: Long = System.currentTimeMillis()

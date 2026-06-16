@@ -60,6 +60,22 @@
 
     </LinearLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_titel"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="4dp"
+        android:hint="@string/field_titel">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_titel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
     <com.groundwork.programmieramt.pen.PenToolbarView
         android:id="@+id/pen_toolbar"
         android:layout_width="match_parent"

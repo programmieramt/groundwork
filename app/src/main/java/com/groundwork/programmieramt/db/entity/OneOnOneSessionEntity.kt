@@ -21,6 +21,7 @@ data class OneOnOneSessionEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val teamMemberId: Long,
     val datum: Long = System.currentTimeMillis(),
+    val titel: String = "",
     val sessionNumber: Int = 1,
     val strokes: String = "",
     val updatedAt: Long = System.currentTimeMillis()

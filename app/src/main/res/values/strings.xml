@@ -41,6 +41,7 @@
     <string name="label_meeting_detail">Meeting</string>
 
     <!-- 1:1 fields -->
+    <string name="field_titel">Titel</string>
     <string name="field_datum">Datum</string>
     <string name="field_thema">Thema / Was auf dem Herzen liegt</string>
     <string name="field_echtes_problem">Das echte Problem / Kern</string>

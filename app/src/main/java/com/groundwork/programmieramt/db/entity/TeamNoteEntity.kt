@@ -9,6 +9,7 @@ import com.squareup.moshi.JsonClass
 data class TeamNoteEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val datum: Long = System.currentTimeMillis(),
+    val titel: String = "",
     val kontextMeeting: String = "",
     val strokes: String = "",
     val updatedAt: Long = System.currentTimeMillis()

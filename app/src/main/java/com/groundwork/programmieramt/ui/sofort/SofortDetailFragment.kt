@@ -63,6 +63,7 @@ class SofortDetailFragment : Fragment() {
             existingId = note.id
             datumMs = note.datum
             binding.etDatum.setText(datumMs.toGermanDate())
+            binding.etTitel.setText(note.titel)
             binding.etKategorie.setText(note.kategorie)
             binding.drawingSurface.setStrokesJson(note.strokes)
         }
@@ -81,6 +82,7 @@ class SofortDetailFragment : Fragment() {
         viewModel.save(SofortNoteEntity(
             id = existingId,
             datum = datumMs,
+            titel = binding.etTitel.text?.toString()?.trim() ?: "",
             kategorie = binding.etKategorie.text?.toString()?.trim() ?: "",
             strokes = binding.drawingSurface.getStrokesJson(),
             updatedAt = System.currentTimeMillis()

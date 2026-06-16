@@ -62,6 +62,7 @@ class FreeNoteDetailFragment : Fragment() {
             existingId = note.id
             datumMs = note.datum
             binding.etDatum.setText(datumMs.toGermanDate())
+            binding.etTitel.setText(note.titel)
             binding.drawingSurface.setStrokesJson(note.strokes)
         }
     }
@@ -79,6 +80,7 @@ class FreeNoteDetailFragment : Fragment() {
         viewModel.save(FreeNoteEntity(
             id = existingId,
             datum = datumMs,
+            titel = binding.etTitel.text?.toString()?.trim() ?: "",
             strokes = binding.drawingSurface.getStrokesJson(),
             updatedAt = System.currentTimeMillis()
         ))
