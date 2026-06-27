@@ -119,6 +119,29 @@ class JournalClient @Inject constructor(
         }
     }
 
+    fun search(query: String): Result<List<String>> {
+        val config = configStore.get()
+            ?: return Result.failure(Exception("Journal nicht konfiguriert"))
+        return try {
+            val request = Request.Builder()
+                .url(config.url.trimEnd('/') + "/entries?query=" + java.net.URLEncoder.encode(query, "UTF-8"))
+                .get()
+                .withAuth(config)
+                .build()
+            val response = buildClient(config).newCall(request).execute()
+            val responseBody = response.body?.string() ?: ""
+            if (!response.isSuccessful) {
+                return Result.failure(Exception("HTTP ${response.code}: $responseBody"))
+            }
+            val arr = JSONObject(responseBody).getJSONArray("entries")
+            val entries = (0 until arr.length()).map { arr.getString(it) }
+            Result.success(entries)
+        } catch (e: Exception) {
+            Timber.e(e, "Journal search failed")
+            Result.failure(e)
+        }
+    }
+
     fun testConnection(): Result<Unit> {
         val config = configStore.get()
             ?: return Result.failure(Exception("Journal nicht konfiguriert"))

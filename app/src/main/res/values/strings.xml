@@ -128,4 +128,14 @@
     <string name="voice_empty_text">Kein Text zum Speichern</string>
     <string name="voice_error_recording">Aufnahme-Fehler: %s</string>
     <string name="voice_error_empty">Aufnahme leer</string>
+
+    <!-- Journal Search -->
+    <string name="nav_search">Journal Suche</string>
+    <string name="search_hint">Stichwort (z.B. Lisa, Sprint, Entscheidung)</string>
+    <string name="search_button">Suchen</string>
+    <string name="search_initial">Stichwort eingeben und suchen</string>
+    <string name="search_searching">Suche läuft…</string>
+    <string name="search_no_results">Keine Ergebnisse</string>
+    <string name="search_empty_query">Bitte Suchbegriff eingeben</string>
+    <string name="search_error">Fehler: %s</string>
 </resources>

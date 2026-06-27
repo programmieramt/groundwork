@@ -46,10 +46,22 @@
         android:id="@+id/btn_voice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
         android:padding="20dp"
         android:textSize="18sp"
         android:text="@string/nav_voice"
         app:icon="@drawable/ic_nav_voice"
+        app:iconGravity="textStart"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:textSize="18sp"
+        android:text="@string/nav_search"
+        app:icon="@drawable/ic_nav_search"
         app:iconGravity="textStart"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 

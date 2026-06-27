@@ -36,6 +36,9 @@ class MoreFragment : Fragment() {
         binding.btnVoice.setOnClickListener {
             findNavController().navigate(R.id.action_more_to_voice)
         }
+        binding.btnSearch.setOnClickListener {
+            findNavController().navigate(R.id.action_more_to_search)
+        }
     }
 
     override fun onDestroyView() {

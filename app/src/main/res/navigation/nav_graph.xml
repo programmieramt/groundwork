@@ -85,6 +85,9 @@
         <action
             android:id="@+id/action_more_to_voice"
             app:destination="@id/nav_voice_note" />
+        <action
+            android:id="@+id/action_more_to_search"
+            app:destination="@id/nav_journal_search" />
     </fragment>
 
     <!-- HEUTE -->
@@ -140,6 +143,12 @@
         android:label="@string/label_meeting_detail">
         <argument android:name="note_id" app:argType="long" android:defaultValue="0L" />
     </fragment>
+
+    <!-- JOURNAL SUCHE -->
+    <fragment
+        android:id="@+id/nav_journal_search"
+        android:name="com.groundwork.programmieramt.ui.voice.JournalSearchFragment"
+        android:label="@string/nav_search" />
 
     <!-- SPRACHNOTIZ -->
     <fragment
