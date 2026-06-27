@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.groundwork.programmieramt.R
 import com.groundwork.programmieramt.databinding.FragmentSettingsBinding
+import com.groundwork.programmieramt.fi.JournalClient
+import com.groundwork.programmieramt.fi.JournalConfigStore
 import com.groundwork.programmieramt.fi.SyncManager
 import com.groundwork.programmieramt.fi.UltrabridgeConfigStore
 import com.groundwork.programmieramt.fi.WebDavConfig
@@ -25,7 +27,9 @@ class SettingsFragment : Fragment() {
 
     @Inject lateinit var configStore: WebDavConfigStore
     @Inject lateinit var ultrabridgeConfigStore: UltrabridgeConfigStore
+    @Inject lateinit var journalConfigStore: JournalConfigStore
     @Inject lateinit var client: WebDavClient
+    @Inject lateinit var journalClient: JournalClient
     @Inject lateinit var syncManager: SyncManager
 
     private var _binding: FragmentSettingsBinding? = null
@@ -53,10 +57,19 @@ class SettingsFragment : Fragment() {
             binding.cbUbTrustAll.isChecked = config.trustAllCerts
         }
 
+        journalConfigStore.get()?.let { config ->
+            binding.etJournalUrl.setText(config.url)
+            binding.etJournalUsername.setText(config.username)
+            binding.etJournalPassword.setText(config.password)
+            binding.cbJournalTrustAll.isChecked = config.trustAllCerts
+        }
+
         binding.btnSave.setOnClickListener { saveConfig() }
         binding.btnTest.setOnClickListener { testConnection() }
         binding.btnSyncNow.setOnClickListener { syncNow() }
         binding.btnUbSave.setOnClickListener { saveUltrabridgeConfig() }
+        binding.btnJournalSave.setOnClickListener { saveJournalConfig() }
+        binding.btnJournalTest.setOnClickListener { testJournalConnection() }
     }
 
     private fun currentConfig() = WebDavConfig(
@@ -105,6 +118,38 @@ class SettingsFragment : Fragment() {
             val result = syncManager.syncAll()
             binding.btnSyncNow.isEnabled = true
             binding.tvStatus.text = if (result.isSuccess) "✓ Synchronisierung abgeschlossen" else "✗ Fehler: ${result.exceptionOrNull()?.message}"
+        }
+    }
+
+    private fun currentJournalConfig() = WebDavConfig(
+        url = binding.etJournalUrl.text?.toString()?.trim() ?: "",
+        username = binding.etJournalUsername.text?.toString()?.trim() ?: "",
+        password = binding.etJournalPassword.text?.toString() ?: "",
+        trustAllCerts = binding.cbJournalTrustAll.isChecked
+    )
+
+    private fun saveJournalConfig() {
+        val config = currentJournalConfig()
+        if (config.url.isBlank()) {
+            binding.tvJournalStatus.text = "URL darf nicht leer sein"
+            return
+        }
+        journalConfigStore.save(config)
+        Toast.makeText(requireContext(), R.string.settings_saved, Toast.LENGTH_SHORT).show()
+        binding.tvJournalStatus.text = getString(R.string.settings_saved)
+    }
+
+    private fun testJournalConnection() {
+        val config = currentJournalConfig()
+        if (config.url.isBlank()) {
+            binding.tvJournalStatus.text = "URL darf nicht leer sein"
+            return
+        }
+        journalConfigStore.save(config)
+        binding.tvJournalStatus.text = "Verbindung wird getestet…"
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) { journalClient.testConnection() }
+            binding.tvJournalStatus.text = if (result.isSuccess) "✓ Verbindung erfolgreich" else "✗ Fehler: ${result.exceptionOrNull()?.message}"
         }
     }
 

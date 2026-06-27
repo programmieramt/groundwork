@@ -82,6 +82,9 @@
         <action
             android:id="@+id/action_more_to_today"
             app:destination="@id/nav_today" />
+        <action
+            android:id="@+id/action_more_to_voice"
+            app:destination="@id/nav_voice_note" />
     </fragment>
 
     <!-- HEUTE -->
@@ -137,6 +140,12 @@
         android:label="@string/label_meeting_detail">
         <argument android:name="note_id" app:argType="long" android:defaultValue="0L" />
     </fragment>
+
+    <!-- SPRACHNOTIZ -->
+    <fragment
+        android:id="@+id/nav_voice_note"
+        android:name="com.groundwork.programmieramt.ui.voice.VoiceNoteFragment"
+        android:label="@string/voice_label" />
 
     <!-- SETTINGS -->
     <fragment

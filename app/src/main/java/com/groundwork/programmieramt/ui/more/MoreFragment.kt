@@ -33,6 +33,9 @@ class MoreFragment : Fragment() {
         binding.btnMeeting.setOnClickListener {
             findNavController().navigate(R.id.action_more_to_meeting)
         }
+        binding.btnVoice.setOnClickListener {
+            findNavController().navigate(R.id.action_more_to_voice)
+        }
     }
 
     override fun onDestroyView() {

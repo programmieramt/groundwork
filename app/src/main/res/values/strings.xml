@@ -105,4 +105,27 @@
     <string name="settings_saved">Einstellungen gespeichert</string>
     <string name="settings_title">Einstellungen</string>
     <string name="settings_ultrabridge_title">Ultrabridge Export</string>
+    <string name="settings_journal_title">Journal Sprachnotiz</string>
+    <string name="settings_journal_url">Journal API URL</string>
+
+    <!-- Voice note -->
+    <string name="nav_voice">Sprachnotiz</string>
+    <string name="voice_label">Sprachnotiz</string>
+    <string name="voice_context_hint">Kontext (z.B. 1:1 mit Lisa)</string>
+    <string name="voice_record_start">Aufnahme starten</string>
+    <string name="voice_record_stop">Aufnahme stoppen</string>
+    <string name="voice_status_ready">Bereit zur Aufnahme</string>
+    <string name="voice_status_recording">Aufnahme läuft…</string>
+    <string name="voice_status_transcribing">Wird transkribiert…</string>
+    <string name="voice_status_transcribed">Transkription fertig</string>
+    <string name="voice_status_saving">Wird gespeichert und strukturiert…</string>
+    <string name="voice_status_saved">%d Fakten gespeichert</string>
+    <string name="voice_transcript_hint">Transkript</string>
+    <string name="voice_save">Zum Journal senden</string>
+    <string name="voice_facts_title">Gespeicherte Fakten</string>
+    <string name="voice_new">Neue Aufnahme</string>
+    <string name="voice_permission_denied">Mikrofon-Berechtigung benötigt</string>
+    <string name="voice_empty_text">Kein Text zum Speichern</string>
+    <string name="voice_error_recording">Aufnahme-Fehler: %s</string>
+    <string name="voice_error_empty">Aufnahme leer</string>
 </resources>
