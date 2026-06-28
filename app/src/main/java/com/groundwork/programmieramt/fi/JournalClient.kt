@@ -48,11 +48,15 @@ class JournalClient @Inject constructor(
         return builder.build()
     }
 
-    private fun Request.Builder.withAuth(config: WebDavConfig): Request.Builder {
-        if (config.username.isNotBlank()) {
-            header("Authorization", Credentials.basic(config.username, config.password))
+    private fun execute(config: WebDavConfig, requestBuilder: Request.Builder): okhttp3.Response {
+        val client = buildClient(config)
+        val response = client.newCall(requestBuilder.build()).execute()
+        if (response.code == 401 && config.username.isNotBlank()) {
+            response.close()
+            requestBuilder.header("Authorization", Credentials.basic(config.username, config.password))
+            return client.newCall(requestBuilder.build()).execute()
         }
-        return this
+        return response
     }
 
     fun transcribe(audioBytes: ByteArray, filename: String = "recording.m4a"): Result<String> {
@@ -69,9 +73,7 @@ class JournalClient @Inject constructor(
             val request = Request.Builder()
                 .url(config.url.trimEnd('/') + "/transcribe")
                 .post(body)
-                .withAuth(config)
-                .build()
-            val response = buildClient(config).newCall(request).execute()
+            val response = execute(config, request)
             val responseBody = response.body?.string() ?: ""
             if (!response.isSuccessful) {
                 return Result.failure(Exception("HTTP ${response.code}: $responseBody"))
@@ -95,9 +97,7 @@ class JournalClient @Inject constructor(
             val request = Request.Builder()
                 .url(config.url.trimEnd('/') + "/journal")
                 .post(json.toString().toRequestBody("application/json".toMediaType()))
-                .withAuth(config)
-                .build()
-            val response = buildClient(config).newCall(request).execute()
+            val response = execute(config, request)
             val responseBody = response.body?.string() ?: ""
             if (!response.isSuccessful) {
                 return Result.failure(Exception("HTTP ${response.code}: $responseBody"))
@@ -126,9 +126,7 @@ class JournalClient @Inject constructor(
             val request = Request.Builder()
                 .url(config.url.trimEnd('/') + "/entries?query=" + java.net.URLEncoder.encode(query, "UTF-8"))
                 .get()
-                .withAuth(config)
-                .build()
-            val response = buildClient(config).newCall(request).execute()
+            val response = execute(config, request)
             val responseBody = response.body?.string() ?: ""
             if (!response.isSuccessful) {
                 return Result.failure(Exception("HTTP ${response.code}: $responseBody"))
@@ -149,9 +147,7 @@ class JournalClient @Inject constructor(
             val request = Request.Builder()
                 .url(config.url.trimEnd('/') + "/health")
                 .get()
-                .withAuth(config)
-                .build()
-            val response = buildClient(config).newCall(request).execute()
+            val response = execute(config, request)
             response.close()
             if (response.isSuccessful) Result.success(Unit)
             else Result.failure(Exception("HTTP ${response.code}"))
