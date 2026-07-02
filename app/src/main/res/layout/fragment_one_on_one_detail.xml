@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -56,8 +57,7 @@
             android:layout_gravity="center_vertical"
             android:text="@string/action_save"
             android:textColor="#FFFFFF"
-            app:strokeColor="#FFFFFF"
-            xmlns:app="http://schemas.android.com/apk/res-auto" />
+            app:strokeColor="#FFFFFF" />
 
     </LinearLayout>
 
@@ -68,13 +68,16 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:layout_marginTop="4dp"
-        android:hint="@string/field_titel">
+        android:hint="@string/field_titel"
+        app:boxStrokeColor="@color/stroke_black"
+        app:boxStrokeWidth="2dp">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_titel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textCapSentences"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:background="#FFFFFF" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.groundwork.programmieramt.pen.PenToolbarView

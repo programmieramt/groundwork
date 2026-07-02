@@ -50,6 +50,12 @@ class TeamNoteDetailFragment : Fragment() {
         binding.etDatum.setText(datumMs.toGermanDate())
         binding.etDatum.setOnClickListener { showDatePicker() }
 
+        listOf(binding.etTitel, binding.etKontext).forEach { et ->
+            et.setOnFocusChangeListener { _, hasFocus ->
+                binding.drawingSurface.setRawDrawingPaused(hasFocus)
+            }
+        }
+
         val noteId = arguments?.getLong("note_id", 0L) ?: 0L
         if (noteId > 0L) loadExisting(noteId)
 

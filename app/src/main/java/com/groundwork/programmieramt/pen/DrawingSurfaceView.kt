@@ -148,6 +148,12 @@ class DrawingSurfaceView @JvmOverloads constructor(
         }
     }
 
+    fun setRawDrawingPaused(paused: Boolean) {
+        if (!isBooxDevice) return
+        touchHelper?.setRawDrawingEnabled(!paused)
+        touchHelper?.isRawDrawingRenderEnabled = !paused
+    }
+
     fun setTool(color: Int, strokeWidth: Float, isMarker: Boolean, isEraser: Boolean = false) {
         currentColor = color
         currentStrokeWidth = strokeWidth

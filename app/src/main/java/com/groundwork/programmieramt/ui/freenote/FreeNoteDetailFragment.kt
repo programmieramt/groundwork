@@ -50,6 +50,10 @@ class FreeNoteDetailFragment : Fragment() {
         binding.etDatum.setText(datumMs.toGermanDate())
         binding.etDatum.setOnClickListener { showDatePicker() }
 
+        binding.etTitel.setOnFocusChangeListener { _, hasFocus ->
+            binding.drawingSurface.setRawDrawingPaused(hasFocus)
+        }
+
         val noteId = arguments?.getLong("note_id", 0L) ?: 0L
         if (noteId > 0L) loadExisting(noteId)
 

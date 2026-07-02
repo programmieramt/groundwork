@@ -67,13 +67,16 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:layout_marginTop="4dp"
-        android:hint="@string/field_titel">
+        android:hint="@string/field_titel"
+        app:boxStrokeColor="@color/stroke_black"
+        app:boxStrokeWidth="2dp">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_titel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textCapSentences"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:background="#FFFFFF" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.groundwork.programmieramt.pen.PenToolbarView

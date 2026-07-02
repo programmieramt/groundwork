@@ -54,6 +54,12 @@ class OneOnOneDetailFragment : Fragment() {
         binding.etDatum.setText(datumMs.toGermanDate())
         binding.etDatum.setOnClickListener { showDatePicker() }
 
+        listOf(binding.etTitel, binding.etMember).forEach { et ->
+            et.setOnFocusChangeListener { _, hasFocus ->
+                binding.drawingSurface.setRawDrawingPaused(hasFocus)
+            }
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.members.collect { members -> setupMemberDropdown(members) }
         }
