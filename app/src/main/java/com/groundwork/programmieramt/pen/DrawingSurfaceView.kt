@@ -16,6 +16,7 @@ import android.view.SurfaceView
 import android.view.ViewTreeObserver
 import com.groundwork.programmieramt.da.Stroke
 import com.groundwork.programmieramt.da.StrokePoint
+import com.onyx.android.sdk.api.device.epd.EpdController
 import com.onyx.android.sdk.pen.TouchHelper
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -244,22 +245,15 @@ class DrawingSurfaceView @JvmOverloads constructor(
     }
 
     fun redrawAll() {
-        touchHelper?.setRawDrawingEnabled(false)
-        touchHelper?.isRawDrawingRenderEnabled = false
-        val canvas = holder.lockCanvas() ?: run {
-            touchHelper?.setRawDrawingEnabled(true)
-            touchHelper?.isRawDrawingRenderEnabled = true
-            return
-        }
+        val canvas = holder.lockCanvas() ?: return
         try {
             canvas.drawColor(Color.WHITE)
             drawTemplate(canvas, width, height)
             for (stroke in strokes) drawStroke(canvas, stroke)
         } finally {
+            try { EpdController.enablePost(this, 1) } catch (_: Throwable) {}
             holder.unlockCanvasAndPost(canvas)
         }
-        touchHelper?.setRawDrawingEnabled(true)
-        touchHelper?.isRawDrawingRenderEnabled = true
     }
 
     private fun drawFallbackInProgress() {
@@ -275,6 +269,7 @@ class DrawingSurfaceView @JvmOverloads constructor(
             drawPointList(canvas, activeFallbackPoints)
             strokePaint.xfermode = null
         } finally {
+            try { EpdController.enablePost(this, 1) } catch (_: Throwable) {}
             holder.unlockCanvasAndPost(canvas)
         }
     }
