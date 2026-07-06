@@ -90,6 +90,7 @@
     <string name="error_member_required">Bitte Teammitglied auswählen</string>
 
     <string name="action_save">Speichern</string>
+    <string name="action_change_date">Datum ändern</string>
     <string name="action_delete">Löschen</string>
     <string name="action_cancel">Abbrechen</string>
     <string name="dialog_delete_title">Eintrag löschen?</string>

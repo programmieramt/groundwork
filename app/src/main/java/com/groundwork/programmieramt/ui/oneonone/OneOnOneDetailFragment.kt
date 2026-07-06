@@ -1,15 +1,26 @@
 package com.groundwork.programmieramt.ui.oneonone
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.InputType
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.button.MaterialButton
 import com.groundwork.programmieramt.R
 import com.groundwork.programmieramt.databinding.FragmentOneOnOneDetailBinding
 import com.groundwork.programmieramt.db.entity.OneOnOneSessionEntity
@@ -18,9 +29,7 @@ import com.groundwork.programmieramt.pen.FormTemplate
 import com.groundwork.programmieramt.util.toGermanDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
 
 @AndroidEntryPoint
 class OneOnOneDetailFragment : Fragment() {
@@ -31,8 +40,9 @@ class OneOnOneDetailFragment : Fragment() {
 
     private var existingId: Long = 0L
     private var datumMs: Long = System.currentTimeMillis()
+    private var titel: String = ""
     private var selectedMember: TeamMemberEntity? = null
-    private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY)
+    private var memberName: String = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentOneOnOneDetailBinding.inflate(inflater, container, false)
@@ -43,7 +53,6 @@ class OneOnOneDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.drawingSurface.drawTemplate = { canvas, w, h -> FormTemplate.drawOneOnOne(canvas, w, h) }
-
         binding.penToolbar.onToolSelected = { tool ->
             binding.drawingSurface.setTool(tool.color, tool.strokeWidth, tool.isMarker, tool.isEraser)
         }
@@ -51,73 +60,134 @@ class OneOnOneDetailFragment : Fragment() {
             binding.drawingSurface.setTool(tool.color, tool.strokeWidth, tool.isMarker, tool.isEraser)
         }
 
-        binding.etDatum.setText(datumMs.toGermanDate())
-        binding.etDatum.setOnClickListener { showDatePicker() }
-
-        listOf(binding.etTitel, binding.etMember).forEach { et ->
-            et.setOnFocusChangeListener { _, hasFocus ->
-                binding.drawingSurface.setRawDrawingPaused(hasFocus)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.members.collect { members -> setupMemberDropdown(members) }
-        }
+        binding.btnEditMeta.setOnClickListener { showMetadataDialog() }
+        binding.btnSave.setOnClickListener { save() }
 
         val sessionId = arguments?.getLong("session_id", 0L) ?: 0L
-        if (sessionId > 0L) loadExisting(sessionId)
-
-        binding.btnSave.setOnClickListener { save() }
-    }
-
-    private fun setupMemberDropdown(members: List<TeamMemberEntity>) {
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, members.map { it.name })
-        binding.etMember.setAdapter(adapter)
-        binding.etMember.setOnItemClickListener { _, _, position, _ ->
-            selectedMember = members[position]
-            binding.tilMember.error = null
-        }
-        selectedMember?.let { binding.etMember.setText(it.name, false) }
-    }
-
-    private fun loadExisting(id: Long) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            val session = viewModel.getSessionById(id) ?: return@launch
-            existingId = session.id
-            datumMs = session.datum
-            binding.etDatum.setText(datumMs.toGermanDate())
-            binding.etTitel.setText(session.titel)
-            binding.drawingSurface.setStrokesJson(session.strokes)
-            viewModel.members.value.find { it.id == session.teamMemberId }?.let {
-                selectedMember = it
-                binding.etMember.setText(it.name, false)
+        if (sessionId > 0L) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                loadExisting(sessionId)
+                showMetadataDialog()
             }
+        } else {
+            showMetadataDialog()
         }
     }
 
-    private fun showDatePicker() {
-        val cal = Calendar.getInstance().apply { timeInMillis = datumMs }
-        DatePickerDialog(requireContext(), { _, y, m, d ->
-            cal.set(y, m, d)
-            datumMs = cal.timeInMillis
-            binding.etDatum.setText(dateFormat.format(cal.time))
-        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
+    private suspend fun loadExisting(id: Long) {
+        val session = viewModel.getSessionById(id) ?: return
+        existingId = session.id
+        datumMs = session.datum
+        titel = session.titel
+        selectedMember = viewModel.members.value.find { it.id == session.teamMemberId }
+        memberName = selectedMember?.name ?: ""
+        binding.drawingSurface.setStrokesJson(session.strokes)
+        updateHeader()
+    }
+
+    private fun updateHeader() {
+        val parts = buildList {
+            if (memberName.isNotBlank()) add(memberName)
+            add(datumMs.toGermanDate())
+        }
+        binding.tvMeta.text = parts.joinToString(" · ")
+        if (titel.isNotBlank()) {
+            binding.tvTitel.visibility = View.VISIBLE
+            binding.tvTitel.text = titel
+        } else {
+            binding.tvTitel.visibility = View.GONE
+        }
+    }
+
+    private fun showMetadataDialog() {
+        val dp = resources.displayMetrics.density
+        val p8 = (8 * dp).toInt()
+        val p16 = (16 * dp).toInt()
+
+        val container = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(p16, p8, p16, p16)
+        }
+
+        // Member autocomplete
+        val members = viewModel.members.value
+        val etMember = AutoCompleteTextView(requireContext()).apply {
+            hint = getString(R.string.field_name)
+            setText(memberName)
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
+            threshold = 1
+            setAdapter(ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, members.map { it.name }))
+            setOnItemClickListener { _, _, position, _ ->
+                selectedMember = members[position]
+                memberName = members[position].name
+            }
+            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+        }
+        container.addView(etMember)
+
+        // Datum row
+        val tvDatum = TextView(requireContext()).apply {
+            text = datumMs.toGermanDate()
+            textSize = 16f
+        }
+        val btnDatum = MaterialButton(requireContext(), null,
+            com.google.android.material.R.attr.borderlessButtonStyle).apply {
+            text = getString(R.string.action_change_date)
+        }
+        val datumRow = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            addView(tvDatum, LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
+            addView(btnDatum)
+        }
+        container.addView(datumRow, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply { topMargin = p8 })
+
+        val etTitel = EditText(requireContext()).apply {
+            hint = getString(R.string.field_titel)
+            setText(titel)
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply { topMargin = p8 }
+        }
+        container.addView(etTitel)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.label_one_on_one_detail))
+            .setView(container)
+            .setPositiveButton("OK") { _, _ ->
+                memberName = etMember.text.toString().trim()
+                titel = etTitel.text.toString().trim()
+                updateHeader()
+            }
+            .setNegativeButton("Zurück") { _, _ ->
+                if (existingId == 0L) findNavController().popBackStack()
+            }
+            .create()
+
+        btnDatum.setOnClickListener {
+            val cal = Calendar.getInstance().apply { timeInMillis = datumMs }
+            DatePickerDialog(requireContext(), { _, y, m, d ->
+                cal.set(y, m, d)
+                datumMs = cal.timeInMillis
+                tvDatum.text = datumMs.toGermanDate()
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
+        }
+
+        dialog.show()
     }
 
     private fun save() {
-        val nameText = binding.etMember.text?.toString()?.trim() ?: ""
-        if (nameText.isBlank()) {
-            binding.tilMember.error = getString(R.string.error_member_required)
+        if (memberName.isBlank()) {
+            Toast.makeText(requireContext(), getString(R.string.error_member_required), Toast.LENGTH_SHORT).show()
+            showMetadataDialog()
             return
         }
-        binding.tilMember.error = null
 
         viewLifecycleOwner.lifecycleScope.launch {
             val member = selectedMember
-                ?: viewModel.members.value.find { it.name.equals(nameText, ignoreCase = true) }
+                ?: viewModel.members.value.find { it.name.equals(memberName, ignoreCase = true) }
                 ?: run {
-                    val id = viewModel.insertMember(TeamMemberEntity(name = nameText))
-                    TeamMemberEntity(id = id, name = nameText)
+                    val id = viewModel.insertMember(TeamMemberEntity(name = memberName))
+                    TeamMemberEntity(id = id, name = memberName)
                 }
 
             val sessionNr = if (existingId == 0L) viewModel.countByMember(member.id) + 1 else {
@@ -127,7 +197,7 @@ class OneOnOneDetailFragment : Fragment() {
                 id = existingId,
                 teamMemberId = member.id,
                 datum = datumMs,
-                titel = binding.etTitel.text?.toString()?.trim() ?: "",
+                titel = titel,
                 sessionNumber = sessionNr,
                 strokes = binding.drawingSurface.getStrokesJson(),
                 updatedAt = System.currentTimeMillis()

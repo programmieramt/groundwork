@@ -6,78 +6,57 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!-- Header: Datum + Kategorie + Save -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:padding="8dp"
         android:background="@color/template_sofort">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_datum"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <TextView
+            android:id="@+id/tv_meta"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
-            android:hint="@string/field_datum">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_datum"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                android:focusable="false"
-                android:clickable="true"
-                android:background="#FFFFFF" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_kategorie"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_edit_meta"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
             android:layout_marginEnd="4dp"
-            android:hint="@string/field_kategorie">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_kategorie"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textCapSentences"
-                android:background="#FFFFFF" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:text="✎"
+            android:textColor="#FFFFFF"
+            app:strokeColor="#FFFFFF" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_save"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
             android:text="@string/action_save"
             android:textColor="#FFFFFF"
             app:strokeColor="#FFFFFF" />
 
     </LinearLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_titel"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <TextView
+        android:id="@+id/tv_titel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginTop="4dp"
-        android:hint="@string/field_titel"
-        app:boxStrokeColor="@color/stroke_black"
-        app:boxStrokeWidth="2dp">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_titel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textCapSentences"
-            android:singleLine="true"
-            android:background="#FFFFFF" />
-    </com.google.android.material.textfield.TextInputLayout>
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:visibility="gone" />
 
     <com.groundwork.programmieramt.pen.PenToolbarView
         android:id="@+id/pen_toolbar"
