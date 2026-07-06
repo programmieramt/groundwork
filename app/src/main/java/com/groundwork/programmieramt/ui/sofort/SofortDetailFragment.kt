@@ -135,6 +135,8 @@ class SofortDetailFragment : Fragment() {
         }
         container.addView(etTitel)
 
+        binding.drawingSurface.setRawDrawingPaused(true)
+
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.label_sofort_detail))
             .setView(container)
@@ -147,6 +149,8 @@ class SofortDetailFragment : Fragment() {
                 if (existingId == 0L) findNavController().popBackStack()
             }
             .create()
+
+        dialog.setOnDismissListener { binding.drawingSurface.setRawDrawingPaused(false) }
 
         btnDatum.setOnClickListener {
             val cal = Calendar.getInstance().apply { timeInMillis = datumMs }
