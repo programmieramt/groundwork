@@ -151,8 +151,19 @@ class DrawingSurfaceView @JvmOverloads constructor(
 
     fun setRawDrawingPaused(paused: Boolean) {
         if (!isBooxDevice) return
-        touchHelper?.setRawDrawingEnabled(!paused)
-        touchHelper?.isRawDrawingRenderEnabled = !paused
+        if (paused) {
+            touchHelper?.setRawDrawingEnabled(false)
+            touchHelper?.isRawDrawingRenderEnabled = false
+            touchHelper?.closeRawDrawing()
+        } else {
+            updateLimitRect()
+            touchHelper?.openRawDrawing()
+            touchHelper?.setStrokeStyle(if (currentIsMarker) TouchHelper.STROKE_STYLE_MARKER else TouchHelper.STROKE_STYLE_PENCIL)
+            touchHelper?.setStrokeColor(currentColor)
+            touchHelper?.setStrokeWidth(currentStrokeWidth)
+            touchHelper?.setRawDrawingEnabled(true)
+            touchHelper?.isRawDrawingRenderEnabled = true
+        }
     }
 
     fun setTool(color: Int, strokeWidth: Float, isMarker: Boolean, isEraser: Boolean = false) {
@@ -252,7 +263,11 @@ class DrawingSurfaceView @JvmOverloads constructor(
             for (stroke in strokes) drawStroke(canvas, stroke)
         } finally {
             try { EpdController.enablePost(this, 1) } catch (_: Throwable) {}
+            touchHelper?.setRawDrawingEnabled(false)
+            touchHelper?.isRawDrawingRenderEnabled = false
             holder.unlockCanvasAndPost(canvas)
+            touchHelper?.setRawDrawingEnabled(true)
+            touchHelper?.isRawDrawingRenderEnabled = true
         }
     }
 
