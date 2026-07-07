@@ -1,9 +1,11 @@
 package com.groundwork.programmieramt.pen
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
@@ -39,6 +41,9 @@ class DrawingSurfaceView @JvmOverloads constructor(
 
     private val activeFallbackPoints = mutableListOf<StrokePoint>()
     private var fallbackFirstTimestamp = 0L
+
+    // Cached template bitmap — rebuilt only when surface size changes
+    private var templateBitmap: Bitmap? = null
 
     var currentColor: Int = Color.BLACK
         private set
@@ -86,17 +91,16 @@ class DrawingSurfaceView @JvmOverloads constructor(
     override fun surfaceCreated(holder: SurfaceHolder) {
         Timber.d("surfaceCreated: size=${width}x${height}")
         initTouchHelper()
-        redrawAll()
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         Timber.d("surfaceChanged: ${width}x${height} format=$format")
+        buildTemplateBitmap(width, height)
         if (touchHelper != null) {
             touchHelper?.setRawDrawingEnabled(false)
             updateLimitRect()
             touchHelper?.setRawDrawingEnabled(true)
             touchHelper?.isRawDrawingRenderEnabled = true
-            Timber.d("surfaceChanged: raw drawing re-enabled after limitRect update")
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             systemGestureExclusionRects = listOf(Rect(0, 0, width, height))
@@ -109,6 +113,19 @@ class DrawingSurfaceView @JvmOverloads constructor(
         touchHelper?.setRawDrawingEnabled(false)
         touchHelper?.isRawDrawingRenderEnabled = false
         touchHelper?.closeRawDrawing()
+        templateBitmap?.recycle()
+        templateBitmap = null
+    }
+
+    private fun buildTemplateBitmap(w: Int, h: Int) {
+        if (w <= 0 || h <= 0) return
+        templateBitmap?.recycle()
+        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val c = Canvas(bmp)
+        c.drawColor(Color.WHITE)
+        drawTemplate(c, w, h)
+        templateBitmap = bmp
+        Timber.d("buildTemplateBitmap: ${w}x${h}")
     }
 
     private fun initTouchHelper() {
@@ -149,6 +166,20 @@ class DrawingSurfaceView @JvmOverloads constructor(
         }
     }
 
+    // Must be called from fragment onResume — surfaceCreated only fires once,
+    // subsequent app-switches need an explicit re-open to stay on the fast Boox path
+    fun resumeDrawing() {
+        if (!isBooxDevice) return
+        updateLimitRect()
+        touchHelper?.openRawDrawing()
+        touchHelper?.setStrokeStyle(if (currentIsMarker) TouchHelper.STROKE_STYLE_MARKER else TouchHelper.STROKE_STYLE_PENCIL)
+        touchHelper?.setStrokeColor(currentColor)
+        touchHelper?.setStrokeWidth(currentStrokeWidth)
+        touchHelper?.setRawDrawingEnabled(true)
+        touchHelper?.isRawDrawingRenderEnabled = true
+        Timber.d("resumeDrawing: raw drawing reopened")
+    }
+
     fun setRawDrawingPaused(paused: Boolean) {
         if (!isBooxDevice) return
         if (paused) {
@@ -156,13 +187,7 @@ class DrawingSurfaceView @JvmOverloads constructor(
             touchHelper?.isRawDrawingRenderEnabled = false
             touchHelper?.closeRawDrawing()
         } else {
-            updateLimitRect()
-            touchHelper?.openRawDrawing()
-            touchHelper?.setStrokeStyle(if (currentIsMarker) TouchHelper.STROKE_STYLE_MARKER else TouchHelper.STROKE_STYLE_PENCIL)
-            touchHelper?.setStrokeColor(currentColor)
-            touchHelper?.setStrokeWidth(currentStrokeWidth)
-            touchHelper?.setRawDrawingEnabled(true)
-            touchHelper?.isRawDrawingRenderEnabled = true
+            resumeDrawing()
         }
     }
 
@@ -230,8 +255,18 @@ class DrawingSurfaceView @JvmOverloads constructor(
                 activeFallbackPoints.add(StrokePoint(x, y, pressure))
             }
             MotionEvent.ACTION_MOVE -> {
+                // Collect historical points for better stroke resolution at fast speeds
+                for (i in 0 until event.historySize) {
+                    val hx = (10 * event.getHistoricalX(i)).roundToInt() / 10.0f
+                    val hy = (10 * event.getHistoricalY(i)).roundToInt() / 10.0f
+                    val hp = (10 * event.getHistoricalPressure(i)).roundToInt() / 10.0f
+                    val last = activeFallbackPoints.lastOrNull()
+                    if (last == null || distance(hx, hy, last.x, last.y) > 1.0) {
+                        activeFallbackPoints.add(StrokePoint(hx, hy, hp))
+                    }
+                }
                 val last = activeFallbackPoints.lastOrNull()
-                if (last == null || distance(x, y, last.x, last.y) > 2.0) {
+                if (last == null || distance(x, y, last.x, last.y) > 1.0) {
                     activeFallbackPoints.add(StrokePoint(x, y, pressure))
                     drawFallbackInProgress()
                 }
@@ -258,8 +293,13 @@ class DrawingSurfaceView @JvmOverloads constructor(
     fun redrawAll() {
         val canvas = holder.lockCanvas() ?: return
         try {
-            canvas.drawColor(Color.WHITE)
-            drawTemplate(canvas, width, height)
+            val tb = templateBitmap
+            if (tb != null) {
+                canvas.drawBitmap(tb, 0f, 0f, null)
+            } else {
+                canvas.drawColor(Color.WHITE)
+                drawTemplate(canvas, width, height)
+            }
             for (stroke in strokes) drawStroke(canvas, stroke)
         } finally {
             try { EpdController.enablePost(this, 1) } catch (_: Throwable) {}
@@ -274,8 +314,13 @@ class DrawingSurfaceView @JvmOverloads constructor(
     private fun drawFallbackInProgress() {
         val canvas = holder.lockCanvas() ?: return
         try {
-            canvas.drawColor(Color.WHITE)
-            drawTemplate(canvas, width, height)
+            val tb = templateBitmap
+            if (tb != null) {
+                canvas.drawBitmap(tb, 0f, 0f, null)
+            } else {
+                canvas.drawColor(Color.WHITE)
+                drawTemplate(canvas, width, height)
+            }
             for (stroke in strokes) drawStroke(canvas, stroke)
             strokePaint.color = currentColor
             strokePaint.strokeWidth = currentStrokeWidth
@@ -298,11 +343,19 @@ class DrawingSurfaceView @JvmOverloads constructor(
         strokePaint.xfermode = null
     }
 
+    // Smooth curves via quadratic bezier — matches toolsboox applyStrokes pattern,
+    // one drawPath call instead of N drawLine calls
     private fun drawPointList(canvas: Canvas, points: List<StrokePoint>) {
         if (points.size < 2) return
+        val path = Path()
+        path.moveTo(points[0].x, points[0].y)
+        var prev = points[0]
         for (i in 1 until points.size) {
-            canvas.drawLine(points[i - 1].x, points[i - 1].y, points[i].x, points[i].y, strokePaint)
+            val curr = points[i]
+            path.quadTo(prev.x, prev.y, curr.x, curr.y)
+            prev = curr
         }
+        canvas.drawPath(path, strokePaint)
     }
 
     private fun eraseAt(x: Float, y: Float) {

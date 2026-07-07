@@ -210,6 +210,16 @@ class OneOnOneDetailFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.drawingSurface.resumeDrawing()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.drawingSurface.setRawDrawingPaused(true)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
