@@ -13,4 +13,5 @@
     <color name="template_notiz">#607D8B</color>
     <color name="template_meeting">#00897B</color>
     <color name="section_divider">#BDBDBD</color>
+    <color name="one_on_one_header">#5B8DD9</color>
 </resources>

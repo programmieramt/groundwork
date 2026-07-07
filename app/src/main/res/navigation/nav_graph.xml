@@ -2,164 +2,44 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/nav_sofort">
+    app:startDestination="@id/nav_one_on_one_list">
 
-    <!-- SOFORT -->
     <fragment
-        android:id="@+id/nav_sofort"
-        android:name="com.groundwork.programmieramt.ui.sofort.SofortFragment"
-        android:label="@string/nav_sofort">
+        android:id="@+id/nav_one_on_one_list"
+        android:name="com.groundwork.programmieramt.ui.oneonone.OneOnOneListFragment"
+        android:label="1:1">
         <action
-            android:id="@+id/action_sofort_to_detail"
-            app:destination="@id/nav_sofort_detail" />
-    </fragment>
-    <fragment
-        android:id="@+id/nav_sofort_detail"
-        android:name="com.groundwork.programmieramt.ui.sofort.SofortDetailFragment"
-        android:label="@string/label_sofort_detail">
-        <argument android:name="note_id" app:argType="long" android:defaultValue="0L" />
+            android:id="@+id/action_list_to_meta"
+            app:destination="@id/nav_one_on_one_meta" />
+        <action
+            android:id="@+id/action_list_to_canvas"
+            app:destination="@id/nav_one_on_one_canvas" />
     </fragment>
 
-    <!-- TEAM -->
     <fragment
-        android:id="@+id/nav_team"
-        android:name="com.groundwork.programmieramt.ui.team.TeamFragment"
-        android:label="@string/nav_team">
+        android:id="@+id/nav_one_on_one_meta"
+        android:name="com.groundwork.programmieramt.ui.oneonone.OneOnOneMetaFragment"
+        android:label="1:1 Details">
+        <argument
+            android:name="session_id"
+            app:argType="long"
+            android:defaultValue="0" />
         <action
-            android:id="@+id/action_team_to_detail"
-            app:destination="@id/nav_team_member_detail" />
-    </fragment>
-    <fragment
-        android:id="@+id/nav_team_member_detail"
-        android:name="com.groundwork.programmieramt.ui.team.TeamMemberDetailFragment"
-        android:label="@string/label_teammitglied">
-        <argument android:name="member_id" app:argType="long" android:defaultValue="0L" />
+            android:id="@+id/action_meta_to_canvas"
+            app:destination="@id/nav_one_on_one_canvas" />
     </fragment>
 
-    <!-- 1:1 -->
     <fragment
-        android:id="@+id/nav_one_on_one"
-        android:name="com.groundwork.programmieramt.ui.oneonone.OneOnOneFragment"
-        android:label="@string/nav_one_on_one">
+        android:id="@+id/nav_one_on_one_canvas"
+        android:name="com.groundwork.programmieramt.ui.oneonone.OneOnOneCanvasFragment"
+        android:label="1:1 Notiz">
+        <argument
+            android:name="session_id"
+            app:argType="long"
+            android:defaultValue="0" />
         <action
-            android:id="@+id/action_one_on_one_to_detail"
-            app:destination="@id/nav_one_on_one_detail" />
+            android:id="@+id/action_canvas_to_meta"
+            app:destination="@id/nav_one_on_one_meta" />
     </fragment>
-    <fragment
-        android:id="@+id/nav_one_on_one_detail"
-        android:name="com.groundwork.programmieramt.ui.oneonone.OneOnOneDetailFragment"
-        android:label="@string/label_one_on_one_detail">
-        <argument android:name="session_id" app:argType="long" android:defaultValue="0L" />
-    </fragment>
-
-    <!-- BEOBACHTUNGEN -->
-    <fragment
-        android:id="@+id/nav_team_note"
-        android:name="com.groundwork.programmieramt.ui.teamnote.TeamNoteFragment"
-        android:label="@string/nav_team_note">
-        <action
-            android:id="@+id/action_team_note_to_detail"
-            app:destination="@id/nav_team_note_detail" />
-    </fragment>
-    <fragment
-        android:id="@+id/nav_team_note_detail"
-        android:name="com.groundwork.programmieramt.ui.teamnote.TeamNoteDetailFragment"
-        android:label="@string/label_team_note_detail">
-        <argument android:name="note_id" app:argType="long" android:defaultValue="0L" />
-    </fragment>
-
-    <!-- MEHR -->
-    <fragment
-        android:id="@+id/nav_more"
-        android:name="com.groundwork.programmieramt.ui.more.MoreFragment"
-        android:label="@string/nav_more">
-        <action
-            android:id="@+id/action_more_to_free_note"
-            app:destination="@id/nav_free_note" />
-        <action
-            android:id="@+id/action_more_to_meeting"
-            app:destination="@id/nav_meeting" />
-        <action
-            android:id="@+id/action_more_to_today"
-            app:destination="@id/nav_today" />
-        <action
-            android:id="@+id/action_more_to_voice"
-            app:destination="@id/nav_voice_note" />
-        <action
-            android:id="@+id/action_more_to_search"
-            app:destination="@id/nav_journal_search" />
-    </fragment>
-
-    <!-- HEUTE -->
-    <fragment
-        android:id="@+id/nav_today"
-        android:name="com.groundwork.programmieramt.ui.today.TodayFragment"
-        android:label="@string/nav_today">
-        <action
-            android:id="@+id/action_today_to_sofort_detail"
-            app:destination="@id/nav_sofort_detail" />
-        <action
-            android:id="@+id/action_today_to_team_note_detail"
-            app:destination="@id/nav_team_note_detail" />
-        <action
-            android:id="@+id/action_today_to_one_on_one_detail"
-            app:destination="@id/nav_one_on_one_detail" />
-        <action
-            android:id="@+id/action_today_to_meeting_detail"
-            app:destination="@id/nav_meeting_detail" />
-        <action
-            android:id="@+id/action_today_to_free_note_detail"
-            app:destination="@id/nav_free_note_detail" />
-    </fragment>
-
-    <!-- NOTIZEN -->
-    <fragment
-        android:id="@+id/nav_free_note"
-        android:name="com.groundwork.programmieramt.ui.freenote.FreeNoteFragment"
-        android:label="@string/nav_notiz">
-        <action
-            android:id="@+id/action_free_note_to_detail"
-            app:destination="@id/nav_free_note_detail" />
-    </fragment>
-    <fragment
-        android:id="@+id/nav_free_note_detail"
-        android:name="com.groundwork.programmieramt.ui.freenote.FreeNoteDetailFragment"
-        android:label="@string/label_free_note_detail">
-        <argument android:name="note_id" app:argType="long" android:defaultValue="0L" />
-    </fragment>
-
-    <!-- MEETING -->
-    <fragment
-        android:id="@+id/nav_meeting"
-        android:name="com.groundwork.programmieramt.ui.meeting.MeetingNoteFragment"
-        android:label="@string/nav_meeting">
-        <action
-            android:id="@+id/action_meeting_to_detail"
-            app:destination="@id/nav_meeting_detail" />
-    </fragment>
-    <fragment
-        android:id="@+id/nav_meeting_detail"
-        android:name="com.groundwork.programmieramt.ui.meeting.MeetingNoteDetailFragment"
-        android:label="@string/label_meeting_detail">
-        <argument android:name="note_id" app:argType="long" android:defaultValue="0L" />
-    </fragment>
-
-    <!-- JOURNAL SUCHE -->
-    <fragment
-        android:id="@+id/nav_journal_search"
-        android:name="com.groundwork.programmieramt.ui.voice.JournalSearchFragment"
-        android:label="@string/nav_search" />
-
-    <!-- SPRACHNOTIZ -->
-    <fragment
-        android:id="@+id/nav_voice_note"
-        android:name="com.groundwork.programmieramt.ui.voice.VoiceNoteFragment"
-        android:label="@string/voice_label" />
-
-    <!-- SETTINGS -->
-    <fragment
-        android:id="@+id/nav_settings"
-        android:name="com.groundwork.programmieramt.ui.settings.SettingsFragment"
-        android:label="@string/settings_title" />
 
 </navigation>

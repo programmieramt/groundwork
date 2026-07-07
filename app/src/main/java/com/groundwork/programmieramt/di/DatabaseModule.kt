@@ -2,13 +2,8 @@ package com.groundwork.programmieramt.di
 
 import android.content.Context
 import androidx.room.Room
-import com.groundwork.programmieramt.db.GroundworkDatabase
-import com.groundwork.programmieramt.db.dao.FreeNoteDao
-import com.groundwork.programmieramt.db.dao.MeetingNoteDao
-import com.groundwork.programmieramt.db.dao.OneOnOneSessionDao
-import com.groundwork.programmieramt.db.dao.SofortNoteDao
-import com.groundwork.programmieramt.db.dao.TeamMemberDao
-import com.groundwork.programmieramt.db.dao.TeamNoteDao
+import com.groundwork.programmieramt.db.AppDatabase
+import com.groundwork.programmieramt.db.OneOnOneDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,15 +17,11 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): GroundworkDatabase =
-        Room.databaseBuilder(context, GroundworkDatabase::class.java, "groundwork.db")
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, "groundwork.db")
             .fallbackToDestructiveMigration()
             .build()
 
-    @Provides fun provideTeamMemberDao(db: GroundworkDatabase): TeamMemberDao = db.teamMemberDao()
-    @Provides fun provideOneOnOneSessionDao(db: GroundworkDatabase): OneOnOneSessionDao = db.oneOnOneSessionDao()
-    @Provides fun provideTeamNoteDao(db: GroundworkDatabase): TeamNoteDao = db.teamNoteDao()
-    @Provides fun provideSofortNoteDao(db: GroundworkDatabase): SofortNoteDao = db.sofortNoteDao()
-    @Provides fun provideFreeNoteDao(db: GroundworkDatabase): FreeNoteDao = db.freeNoteDao()
-    @Provides fun provideMeetingNoteDao(db: GroundworkDatabase): MeetingNoteDao = db.meetingNoteDao()
+    @Provides
+    fun provideOneOnOneDao(db: AppDatabase): OneOnOneDao = db.oneOnOneDao()
 }
