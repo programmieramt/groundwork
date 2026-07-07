@@ -45,6 +45,12 @@ class DrawingSurfaceView @JvmOverloads constructor(
     // Cached template bitmap — rebuilt only when surface size changes
     private var templateBitmap: Bitmap? = null
 
+    // Tracks whether raw drawing was intentionally paused (e.g. dialog open).
+    // Persists across surface creation so initTouchHelper can honour it even
+    // when the surface becomes ready after setRawDrawingPaused(true) was called.
+    var rawDrawingPaused: Boolean = false
+        private set
+
     var currentColor: Int = Color.BLACK
         private set
     var currentStrokeWidth: Float = 3.0f
@@ -159,6 +165,13 @@ class DrawingSurfaceView @JvmOverloads constructor(
             touchHelper?.setRawDrawingEnabled(true)
             touchHelper?.isRawDrawingRenderEnabled = true
             Timber.d("setRawDrawingEnabled(true) done")
+            // If a dialog was already showing when surfaceCreated fired, close immediately
+            if (rawDrawingPaused) {
+                touchHelper?.setRawDrawingEnabled(false)
+                touchHelper?.isRawDrawingRenderEnabled = false
+                touchHelper?.closeRawDrawing()
+                Timber.d("initTouchHelper: raw drawing closed — rawDrawingPaused=true")
+            }
         } catch (e: Throwable) {
             Timber.w(e, "TouchHelper.create FAILED — using MotionEvent fallback")
             touchHelper = null
@@ -169,6 +182,7 @@ class DrawingSurfaceView @JvmOverloads constructor(
     // Must be called from fragment onResume — surfaceCreated only fires once,
     // subsequent app-switches need an explicit re-open to stay on the fast Boox path
     fun resumeDrawing() {
+        rawDrawingPaused = false
         if (!isBooxDevice) return
         updateLimitRect()
         touchHelper?.openRawDrawing()
@@ -180,7 +194,10 @@ class DrawingSurfaceView @JvmOverloads constructor(
         Timber.d("resumeDrawing: raw drawing reopened")
     }
 
+    // Called when a dialog opens/closes — persists across onPause/onResume so
+    // onResume does not re-enable raw drawing while the dialog is still visible.
     fun setRawDrawingPaused(paused: Boolean) {
+        rawDrawingPaused = paused
         if (!isBooxDevice) return
         if (paused) {
             touchHelper?.setRawDrawingEnabled(false)
@@ -189,6 +206,15 @@ class DrawingSurfaceView @JvmOverloads constructor(
         } else {
             resumeDrawing()
         }
+    }
+
+    // Called from onPause — closes EPD without changing rawDrawingPaused so that
+    // dialog-open state is preserved across background trips.
+    fun pauseDrawing() {
+        if (!isBooxDevice) return
+        touchHelper?.setRawDrawingEnabled(false)
+        touchHelper?.isRawDrawingRenderEnabled = false
+        touchHelper?.closeRawDrawing()
     }
 
     fun setTool(color: Int, strokeWidth: Float, isMarker: Boolean, isEraser: Boolean = false) {

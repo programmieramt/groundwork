@@ -162,12 +162,12 @@ class FreeNoteDetailFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        binding.drawingSurface.resumeDrawing()
+        if (!binding.drawingSurface.rawDrawingPaused) binding.drawingSurface.resumeDrawing()
     }
 
     override fun onPause() {
         super.onPause()
-        binding.drawingSurface.setRawDrawingPaused(true)
+        binding.drawingSurface.pauseDrawing()
     }
 
     override fun onDestroyView() {
